@@ -47,12 +47,6 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-emerald-50 text-gray-900">
 
       {/* Header */}
-<<<<<<< issue-1
-      <header className="bg-white/80 backdrop-blur border-b">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-indigo-600 mb-1">EchoRoom</h1>
-            <p className="text-sm text-gray-600">
               Where Ideas Become Learning
             </p>
           </div>
@@ -143,7 +137,6 @@ export default function Home() {
           <span>Built during Open Source Quest</span>
         </div>
       </footer>
-=======
 
       <Header />
 
@@ -161,8 +154,6 @@ export default function Home() {
 
       {/* Footer */}
       <Footer/>
-      
->>>>>>> main
 
     </main>
   );
