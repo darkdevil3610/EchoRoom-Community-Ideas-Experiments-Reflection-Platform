@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+
 
 export default function HomePage() {
   const [dark, setDark] = useState(false);
@@ -40,9 +42,18 @@ export default function HomePage() {
           </div>
 
           <div className="hidden md:flex gap-8 text-slate-700 dark:text-slate-300">
-            <a className="hover:text-blue-600 cursor-pointer">Ideas</a>
-            <a className="hover:text-blue-600 cursor-pointer">Experiments</a>
-            <a className="hover:text-blue-600 cursor-pointer">Reflection</a>
+           <Link href="/ideas" className="hover:text-blue-600 cursor-pointer">
+  Ideas
+</Link>
+
+<Link href="/experiments" className="hover:text-blue-600 cursor-pointer">
+  Experiments
+</Link>
+
+<Link href="/reflection" className="hover:text-blue-600 cursor-pointer">
+  Reflection
+</Link>
+
           </div>
 
           <div className="flex items-center gap-4">
@@ -53,9 +64,14 @@ export default function HomePage() {
               {dark ? "☀️" : "🌙"}
             </button>
 
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow">
-              Join Community
-            </button>
+            <Link
+  href="/community"
+  className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow inline-block"
+>
+  Join Community
+</Link>
+
+
           </div>
 
         </div>
@@ -84,17 +100,23 @@ export default function HomePage() {
 
         <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
 
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full shadow-lg transition hover:-translate-y-1">
+          <Link
+  href="/ideas"
+  className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full shadow-lg transition hover:-translate-y-1 inline-block"
+>
+  Start Exploring →
+</Link>
 
-            Start Exploring →
 
-          </button>
 
-          <button className="border border-slate-300 dark:border-slate-600 px-8 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+          <Link
+  href="/about"
+  className="border border-slate-300 dark:border-slate-600 px-8 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 inline-block"
+>
+  Learn More
+</Link>
 
-            Learn More
 
-          </button>
 
         </div>
 
@@ -149,11 +171,14 @@ export default function HomePage() {
 
           </p>
 
-          <button className="mt-6 bg-white text-blue-600 px-8 py-3 rounded-full font-semibold shadow hover:bg-gray-100">
+          <Link
+  href="/community"
+  className="mt-6 bg-white text-blue-600 px-8 py-3 rounded-full font-semibold shadow hover:bg-gray-100 inline-block"
+>
+  Get Started
+</Link>
 
-            Get Started
 
-          </button>
 
         </div>
 
@@ -170,9 +195,18 @@ export default function HomePage() {
           </p>
 
           <div className="flex gap-6 text-sm text-slate-500 mt-4 md:mt-0">
-            <a className="hover:text-blue-600">About</a>
-            <a className="hover:text-blue-600">Community</a>
-            <a className="hover:text-blue-600">GitHub</a>
+            <Link href="/about" className="hover:text-blue-600">
+  About
+</Link>
+
+<Link href="/community" className="hover:text-blue-600">
+  Community
+</Link>
+
+<Link href="https://github.com/R3ACTR/EchoRoom-Community-Ideas-Experiments-Reflection-Platform" className="hover:text-blue-600">
+  GitHub
+</Link>
+
           </div>
 
         </div>
