@@ -55,53 +55,111 @@ export default function HomePage() {
     <main className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
 
       {/* NAVBAR */}
-      <nav className="sticky top-0 z-50 bg-white/80 dark:bg-slate-800/80 backdrop-blur border-b border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="text-2xl font-bold text-blue-600">EchoRoom</div>
+      {/* NAVBAR */}
+<nav className="sticky top-0 z-50 backdrop-blur-lg bg-white/70 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800">
 
-          <div className="hidden md:flex gap-8 text-slate-700 dark:text-slate-300">
-            <Link href="/ideas" className="hover:text-blue-600 cursor-pointer">Ideas</Link>
-            <Link href="/experiments" className="hover:text-blue-600 cursor-pointer">Experiments</Link>
-            <Link href="/reflection" className="hover:text-blue-600 cursor-pointer">Reflection</Link>
-          </div>
+  <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={toggleTheme}
-              className="text-xl hover:scale-110 transition"
-              aria-label="Toggle theme"
-            >
-              {mounted ? (dark ? "☀️" : "🌙") : "🌙"}
-            </button>
+    {/* Logo */}
+    <div className="text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+      EchoRoom
+    </div>
 
-            <Link href="/community" className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg shadow inline-block">
-              Join Community
-            </Link>
-          </div>
-        </div>
-      </nav>
+    {/* Navigation Links */}
+    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600 dark:text-slate-300">
+
+      <Link href="/ideas" className="hover:text-blue-600 transition">
+        Ideas
+      </Link>
+
+      <Link href="/experiments" className="hover:text-blue-600 transition">
+        Experiments
+      </Link>
+
+      <Link href="/reflection" className="hover:text-blue-600 transition">
+        Reflection
+      </Link>
+
+    </div>
+
+    {/* Right side */}
+    <div className="flex items-center gap-4">
+
+      {/* Theme Toggle */}
+      <button
+        onClick={toggleTheme}
+        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+        aria-label="Toggle theme"
+      >
+        {mounted ? (dark ? "☀️" : "🌙") : "🌙"}
+      </button>
+
+      {/* CTA Button */}
+      <Link
+        href="/community"
+        className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2 rounded-full font-medium shadow hover:shadow-lg hover:scale-105 transition duration-200"
+      >
+        Join Community
+      </Link>
+
+    </div>
+
+  </div>
+
+</nav>
+
 
 {/* HERO */}
-<section className="max-w-4xl mx-auto text-center px-6 pt-24 pb-16">
-  <h1 className="text-5xl md:text-6xl font-bold text-slate-800 dark:text-white leading-tight">
-    Turn Ideas into
-    <span className="block text-blue-600 mt-2">Actionable Learning</span>
+<section className="relative max-w-5xl mx-auto text-center px-6 pt-20 pb-20">
+
+  {/* Badge */}
+  <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-4 py-1.5 rounded-full text-sm font-medium mb-6">
+    Community-Driven Learning Platform
+  </div>
+
+  {/* Heading */}
+  <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+    Turn Ideas into{" "}
+    <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+      Actionable Learning
+    </span>
   </h1>
-  <p className="mt-4 text-sm text-green-600 dark:text-green-400">
-    {backendStatus}
+
+  {/* Backend status */}
+  <div className="mt-4">
+    <span className="inline-block text-xs font-medium px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+      {backendStatus}
+    </span>
+  </div>
+
+  {/* Description */}
+  <p className="mt-6 text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+    EchoRoom helps communities transform ideas into experiments, insights,
+    and meaningful learning — collaboratively and transparently.
   </p>
-  <p className="mt-4 text-lg text-slate-600 dark:text-slate-300">
-    EchoRoom helps communities transform ideas into experiments, insights, and meaningful learning — collaboratively and transparently.
-  </p>
-        <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/ideas" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full shadow-lg transition hover:-translate-y-1 inline-block">
-            Start Exploring →
-          </Link>
-          <Link href="/about" className="border border-slate-300 dark:border-slate-600 px-8 py-3 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-white inline-block">
-            Learn More
-          </Link>
-        </div>
-      </section>
+
+  {/* Buttons */}
+  <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+
+    <Link
+      href="/ideas"
+      className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:shadow-xl hover:scale-105 transition duration-200 inline-block"
+    >
+      Start Exploring →
+    </Link>
+
+    <Link
+  href="/about"
+  className="px-8 py-3 rounded-full font-semibold border border-slate-300 dark:border-slate-600 text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition inline-block"
+>
+  Learn More
+</Link>
+
+
+  </div>
+
+</section>
+
 
       {/* FEATURES */}
       <section className="max-w-7xl mx-auto px-6 pb-24">
@@ -141,10 +199,24 @@ export default function HomePage() {
 
 function FeatureCard({ emoji, title, desc }: { emoji: string; title: string; desc: string }) {
   return (
-    <div className="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-lg transition">
-      <div className="text-3xl mb-3">{emoji}</div>
-      <h3 className="font-semibold text-lg text-slate-800 dark:text-white">{title}</h3>
-      <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">{desc}</p>
+    <div className="group bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-2 transition duration-300">
+
+      {/* Icon container */}
+      <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 text-2xl mb-4 group-hover:scale-110 transition">
+        {emoji}
+      </div>
+
+      {/* Title */}
+      <h3 className="font-semibold text-lg text-slate-800 dark:text-white">
+        {title}
+      </h3>
+
+      {/* Description */}
+      <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+        {desc}
+      </p>
+
     </div>
   );
 }
+
