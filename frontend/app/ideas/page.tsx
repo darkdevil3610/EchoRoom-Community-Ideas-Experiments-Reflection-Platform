@@ -5,15 +5,15 @@ export default function IdeasPage() {
 
   return (
     <PageLayout>
-      <div className="max-w-6xl mx-auto">
+      <div className="section">
 
         {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+        <div className="section">
+          <h1 className="page-title">
             Ideas in EchoRoom
           </h1>
 
-          <p className="text-gray-600 text-lg max-w-2xl">
+          <p className="page-description">
             Ideas are the starting point of learning. Communities can share ideas,
             explore them through experiments, and reflect on outcomes.
           </p>
@@ -23,7 +23,7 @@ export default function IdeasPage() {
         {ideas.length === 0 ? (
 
           /* Empty State */
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+          <div className="card text-center py-12">
 
             <h2 className="text-2xl font-semibold text-gray-800 mb-3">
               No ideas yet
@@ -34,7 +34,7 @@ export default function IdeasPage() {
               Be the first to create one.
             </p>
 
-            <button className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
+            <button className="btn-primary">
               Create Idea
             </button>
 
@@ -46,10 +46,7 @@ export default function IdeasPage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
             {ideas.map((idea, index) => (
-              <div
-                key={index}
-                className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition"
-              >
+              <div key={index} className="card">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">
                   Idea Title
                 </h3>
