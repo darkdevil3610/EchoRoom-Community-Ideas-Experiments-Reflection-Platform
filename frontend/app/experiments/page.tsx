@@ -2,7 +2,7 @@ import { PageLayout } from "../community/PageLayout";
 
 export default function ExperimentsPage() {
 
-  // Sample experiment data (replace later with backend data)
+  // Sample experiment data
   const experiments = [
     {
       title: "Landing Page Improvement",
@@ -25,14 +25,14 @@ export default function ExperimentsPage() {
   ];
 
 
-  // Helper function for status text color
+  // Status color
   const getStatusTextColor = (status: string) => {
     if (status === "Completed") return "text-green-600";
     if (status === "In Progress") return "text-blue-600";
     return "text-gray-600";
   };
 
-  // Helper function for progress bar color
+  // Progress bar color
   const getProgressColor = (status: string) => {
     if (status === "Completed") return "bg-green-500";
     if (status === "In Progress") return "bg-blue-500";
@@ -43,24 +43,26 @@ export default function ExperimentsPage() {
   return (
     <PageLayout>
 
-      <div className="max-w-5xl mx-auto">
+      <div className="section">
 
-        {/* Page Header */}
-        <header className="mb-10">
-          <h1 className="text-4xl font-bold text-blue-600 mb-3">
+        {/* Header */}
+        <div className="section">
+
+          <h1 className="page-title">
             Experiments
           </h1>
 
-          <p className="text-gray-600 text-lg">
+          <p className="page-description">
             Track and manage experiments to test ideas and learn quickly.
           </p>
-        </header>
+
+        </div>
 
 
         {/* Empty State */}
         {experiments.length === 0 ? (
 
-          <div className="text-center py-20 bg-white rounded-lg shadow">
+          <div className="card text-center py-16">
 
             <h2 className="text-2xl font-semibold mb-2">
               No experiments yet
@@ -70,7 +72,7 @@ export default function ExperimentsPage() {
               Start your first experiment to test and validate ideas.
             </p>
 
-            <button className="bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700 transition">
+            <button className="btn-primary">
               Create Experiment
             </button>
 
@@ -83,29 +85,21 @@ export default function ExperimentsPage() {
 
             {experiments.map((exp, index) => (
 
-              <div
-                key={index}
-                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition"
-              >
+              <div key={index} className="card">
 
-                {/* Title */}
                 <h2 className="text-xl font-semibold mb-2">
                   {exp.title}
                 </h2>
 
-
-                {/* Description */}
                 <p className="text-gray-600 mb-4">
                   {exp.description}
                 </p>
 
 
-                {/* Status and Progress */}
+                {/* Status */}
                 <div className="flex justify-between items-center mb-2">
 
-                  <span
-                    className={`text-sm font-medium ${getStatusTextColor(exp.status)}`}
-                  >
+                  <span className={`text-sm font-medium ${getStatusTextColor(exp.status)}`}>
                     Status: {exp.status}
                   </span>
 
@@ -116,13 +110,13 @@ export default function ExperimentsPage() {
                 </div>
 
 
-                {/* Progress Bar */}
+                {/* Progress bar */}
                 <div className="w-full bg-gray-200 rounded-full h-2">
 
                   <div
                     className={`h-2 rounded-full ${getProgressColor(exp.status)}`}
                     style={{ width: `${exp.progress}%` }}
-                  ></div>
+                  />
 
                 </div>
 

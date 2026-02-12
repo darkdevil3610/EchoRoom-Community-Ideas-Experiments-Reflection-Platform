@@ -1,8 +1,5 @@
 import { Navbar } from "./Navbar";
 
-
-
-
 interface PageLayoutProps {
   children: React.ReactNode;
 }
@@ -10,9 +7,16 @@ interface PageLayoutProps {
 export const PageLayout = ({ children }: PageLayoutProps) => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+
       <Navbar />
-      <div className="flex-1">{children}</div>
-     
+
+      {/* Content container aligned with navbar */}
+      <main className="flex-1 w-full">
+        <div className="max-w-6xl mx-auto px-6 py-12">
+          {children}
+        </div>
+      </main>
+
     </div>
   );
 };
