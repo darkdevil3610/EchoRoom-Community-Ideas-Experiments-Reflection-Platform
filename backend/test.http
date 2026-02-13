@@ -1,0 +1,28 @@
+### Create Idea
+POST http://localhost:5000/ideas
+Content-Type: application/json
+
+{
+  "title": "Test Idea",
+  "description": "Testing lifecycle"
+}
+
+###
+
+### Move to experiment
+PATCH http://localhost:5000/ideas/3/status
+Content-Type: application/json
+
+{
+  "status": "experiment"
+}
+
+###
+
+###
+PATCH http://localhost:5000/ideas/3/status
+Content-Type: application/json
+
+{
+  "status": "reflection"
+}
