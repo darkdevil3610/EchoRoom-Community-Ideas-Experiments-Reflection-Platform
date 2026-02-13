@@ -1,11 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
+/* ========================= */
+/* BASE */
+/* ========================= */
 
 html,
 body {
@@ -14,4 +11,37 @@ body {
 
 body {
   margin: 0;
+}
+
+
+/* ========================= */
+/* GLOBAL DESIGN SYSTEM */
+/* ========================= */
+
+@layer components {
+
+  .page-title {
+    @apply text-4xl font-bold text-gray-900 mb-3;
+  }
+
+  .page-description {
+    @apply text-lg text-gray-600 mb-8 max-w-2xl;
+  }
+
+  .card {
+    @apply bg-white border border-gray-200 rounded-xl p-6 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition font-medium;
+  }
+
+  .btn-secondary {
+    @apply border border-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-100 transition;
+  }
+
+  .section {
+    @apply px-6 py-12;
+  }
+
 }

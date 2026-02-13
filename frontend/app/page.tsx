@@ -7,35 +7,35 @@ export default function HomePage() {
   const [dark, setDark] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [backendStatus, setBackendStatus] = useState("Checking backend...");
-
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
   setMounted(true);
 
-  // Theme logic
-  const saved = localStorage.getItem("color-theme");
-  if (
-    saved === "dark" ||
-    (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches)
-  ) {
+  const savedTheme = localStorage.getItem("color-theme");
+
+  if (savedTheme === "dark") {
     document.documentElement.classList.add("dark");
     setDark(true);
-  } else {
+  } else if (savedTheme === "light") {
     document.documentElement.classList.remove("dark");
     setDark(false);
+  } else {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (prefersDark) {
+      document.documentElement.classList.add("dark");
+      setDark(true);
+    }
   }
 
-  // Backend connectivity test
   fetch("http://localhost:5000/health")
-    .then(res => res.json())
-    .then(data => {
+    .then((res) => res.json())
+    .then((data) => {
       setBackendStatus("✅ Backend Connected: " + data.message);
     })
-    .catch(err => {
+    .catch(() => {
       setBackendStatus("❌ Backend Not Connected");
-      console.error(err);
     });
-
 }, []);
 
 
@@ -50,10 +50,11 @@ export default function HomePage() {
     }
     setDark(newDark);
   };
+if (!mounted) return null;
 
-  return (
+return (
+
     <main className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
-
       {/* NAVBAR */}
       {/* NAVBAR */}
 <nav className="sticky top-0 z-50 backdrop-blur-lg bg-white/70 dark:bg-slate-900/70 border-b border-slate-200 dark:border-slate-800">
@@ -162,21 +163,45 @@ export default function HomePage() {
 
 
       {/* FEATURES */}
-      <section className="max-w-7xl mx-auto px-6 pb-24">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <FeatureCard emoji="💡" title="Share Ideas" desc="Post and discuss ideas openly with your community to spark innovation." />
-          <FeatureCard emoji="🧪" title="Run Experiments" desc="Validate ideas through focused real-world experiments and tests." />
-          <FeatureCard emoji="📊" title="Track Outcomes" desc="Capture results and build collective knowledge from detailed outcomes." />
-          <FeatureCard emoji="🧠" title="Reflect & Learn" desc="Improve continuously through shared insights and reflection." />
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <FeatureCard
+            emoji="💡"
+            title="Share Ideas"
+            desc="Post and discuss ideas openly with your community to spark innovation."
+          />
+          <FeatureCard
+            emoji="🧪"
+            title="Run Experiments"
+            desc="Validate ideas through focused real-world experiments and tests."
+          />
+          <FeatureCard
+            emoji="📊"
+            title="Track Outcomes"
+            desc="Capture results and build collective knowledge from detailed outcomes."
+          />
+          <FeatureCard
+            emoji="🧠"
+            title="Reflect & Learn"
+            desc="Improve continuously through shared insights and reflection."
+          />
         </div>
       </section>
 
       {/* CTA */}
       <section className="bg-blue-600 py-16 text-center">
         <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-white">Start building and learning together</h2>
-          <p className="text-blue-100 mt-4">Join EchoRoom and turn your ideas into meaningful experiments today. No credit card required.</p>
-          <Link href="/community" className="mt-6 bg-white text-blue-600 px-8 py-3 rounded-full font-semibold shadow hover:bg-gray-100 inline-block">
+          <h2 className="text-3xl font-bold text-white">
+            Start building and learning together
+          </h2>
+          <p className="text-blue-100 mt-4">
+            Join EchoRoom and turn your ideas into meaningful experiments today.
+            No credit card required.
+          </p>
+          <Link
+            href="/community"
+            className="mt-6 bg-white text-blue-600 px-8 py-3 rounded-full font-semibold shadow hover:bg-gray-100 inline-block"
+          >
             Get Started
           </Link>
         </div>
@@ -184,12 +209,23 @@ export default function HomePage() {
 
       {/* FOOTER */}
       <footer className="border-t border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between">
-          <p className="text-sm text-slate-500">© 2026 EchoRoom — Built during Open Source Quest</p>
-          <div className="flex gap-6 text-sm text-slate-500 mt-4 md:mt-0">
-            <Link href="/about" className="hover:text-blue-600">About</Link>
-            <Link href="/community" className="hover:text-blue-600">Community</Link>
-            <Link href="https://github.com/R3ACTR/EchoRoom-Community-Ideas-Experiments-Reflection-Platform" className="hover:text-blue-600">GitHub</Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row justify-between items-center md:items-start text-center md:text-left">
+          <p className="text-sm text-slate-500">
+            © 2026 EchoRoom — Built during Open Source Quest
+          </p>
+          <div className="flex gap-4 sm:gap-6 text-sm text-slate-500 mt-4 md:mt-0 justify-center md:justify-start">
+            <Link href="/about" className="hover:text-blue-600">
+              About
+            </Link>
+            <Link href="/community" className="hover:text-blue-600">
+              Community
+            </Link>
+            <Link
+              href="https://github.com/R3ACTR/EchoRoom-Community-Ideas-Experiments-Reflection-Platform"
+              className="hover:text-blue-600"
+            >
+              GitHub
+            </Link>
           </div>
         </div>
       </footer>
@@ -197,7 +233,15 @@ export default function HomePage() {
   );
 }
 
-function FeatureCard({ emoji, title, desc }: { emoji: string; title: string; desc: string }) {
+function FeatureCard({
+  emoji,
+  title,
+  desc,
+}: {
+  emoji: string;
+  title: string;
+  desc: string;
+}) {
   return (
     <div className="group bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-2 transition duration-300">
 
