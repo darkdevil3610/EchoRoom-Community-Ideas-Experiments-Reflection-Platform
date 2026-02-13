@@ -1,10 +1,11 @@
 import { Router, Request, Response } from "express";
 import { outcomes } from "./outcomes.routes";
 
-
 const router = Router();
 
-// Reflection model
+/**
+ * Reflection model (temporary in-memory)
+ */
 interface Reflection {
   id: number;
   outcomeId: number;
@@ -12,31 +13,25 @@ interface Reflection {
   createdAt: Date;
 }
 
-// Temporary storage
-let reflections: Reflection[] = [];
+/**
+ * Temporary storage
+ */
+export let reflections: Reflection[] = [];
 let nextId = 1;
 
 
 /**
  * POST /reflections
- * Create a reflection
+ * Create a reflection for an outcome
+ *
+ * Learning loop rule enforced:
+ * Outcome must exist before Reflection
  */
 router.post("/", (req: Request, res: Response) => {
   try {
     const { outcomeId, content } = req.body;
-    // Check if outcome exists
-const outcomeExists = outcomes.find(
-  o => o.id === outcomeId
-);
 
-if (!outcomeExists) {
-  return res.status(400).json({
-    success: false,
-    message: "Outcome does not exist",
-  });
-}
-
-
+    // 1. Validate required fields
     if (!outcomeId || !content) {
       return res.status(400).json({
         success: false,
@@ -44,6 +39,19 @@ if (!outcomeExists) {
       });
     }
 
+    // 2. Check outcome exists
+    const outcomeExists = outcomes.find(
+      (o) => o.id === outcomeId
+    );
+
+    if (!outcomeExists) {
+      return res.status(400).json({
+        success: false,
+        message: "Outcome does not exist",
+      });
+    }
+
+    // 3. Create reflection
     const newReflection: Reflection = {
       id: nextId++,
       outcomeId,
@@ -51,15 +59,17 @@ if (!outcomeExists) {
       createdAt: new Date(),
     };
 
+    // 4. Store reflection
     reflections.push(newReflection);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      reflection: newReflection,
+      message: "Reflection created successfully",
+      data: newReflection,
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to create reflection",
     });
@@ -72,17 +82,11 @@ if (!outcomeExists) {
  * Get all reflections
  */
 router.get("/", (_req: Request, res: Response) => {
-  try {
-    res.json({
-      success: true,
-      reflections,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch reflections",
-    });
-  }
+  return res.json({
+    success: true,
+    count: reflections.length,
+    data: reflections,
+  });
 });
 
 
@@ -94,21 +98,30 @@ router.get("/:outcomeId", (req: Request, res: Response) => {
   try {
     const outcomeId = Number(req.params.outcomeId);
 
-    const result = reflections.filter(
-      r => r.outcomeId === outcomeId
+    if (!outcomeId) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid outcomeId is required",
+      });
+    }
+
+    const filtered = reflections.filter(
+      (r) => r.outcomeId === outcomeId
     );
 
-    res.json({
+    return res.json({
       success: true,
-      reflections: result,
+      count: filtered.length,
+      data: filtered,
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to fetch reflections",
     });
   }
 });
+
 
 export default router;

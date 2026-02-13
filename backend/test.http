@@ -1,37 +1,32 @@
-### Create Idea
 POST http://localhost:5000/ideas
 Content-Type: application/json
 
 {
-  "title": "Improve landing page",
-  "description": "Test new hero section"
+  "title": "Test idea",
+  "description": "Testing learning loop"
 }
-### Create Experiment
+###
 POST http://localhost:5000/experiments
 Content-Type: application/json
 
 {
   "ideaId": 1,
-  "title": "Hero section variation A",
-  "description": "Test new headline and CTA",
-  "status": "planned"
+  "hypothesis": "This will improve engagement"
 }
-
-### Create Outcome
+###
 POST http://localhost:5000/outcomes
 Content-Type: application/json
 
 {
-  "experimentId": 2,
-  "result": "success",
-  "notes": "CTR increased by 18%"
+  "experimentId": 1,
+  "result": "Engagement increased",
+  "notes": "Worked well"
 }
-
-### Create Reflection
+###
 POST http://localhost:5000/reflections
 Content-Type: application/json
 
 {
-  "outcomeId": 2,
-  "content": "Hero section with clear CTA significantly improves engagement. Use this pattern going forward."
+  "outcomeId": 1,
+  "content": "We should use this approach again"
 }

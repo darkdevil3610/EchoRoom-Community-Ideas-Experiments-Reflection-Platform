@@ -3,7 +3,9 @@ import { experiments } from "./experiments.routes";
 
 const router = Router();
 
-// Outcome model (temporary in-memory)
+/**
+ * Outcome model (temporary in-memory)
+ */
 interface Outcome {
   id: number;
   experimentId: number;
@@ -12,7 +14,9 @@ interface Outcome {
   createdAt: Date;
 }
 
-// Temporary storage
+/**
+ * Temporary storage
+ */
 export let outcomes: Outcome[] = [];
 let nextId = 1;
 
@@ -20,23 +24,15 @@ let nextId = 1;
 /**
  * POST /outcomes
  * Create a new outcome
+ *
+ * Learning loop rule enforced:
+ * Experiment must exist before Outcome can be created
  */
 router.post("/", (req: Request, res: Response) => {
   try {
     const { experimentId, result, notes } = req.body;
-    // Check if experiment exists
-const experimentExists = experiments.find(
-  e => e.id === experimentId
-);
 
-if (!experimentExists) {
-  return res.status(400).json({
-    success: false,
-    message: "Experiment does not exist",
-  });
-}
-
-
+    // 1. Validate required fields
     if (!experimentId || !result) {
       return res.status(400).json({
         success: false,
@@ -44,6 +40,19 @@ if (!experimentExists) {
       });
     }
 
+    // 2. Validate experiment exists
+    const experimentExists = experiments.find(
+      (e) => e.id === experimentId
+    );
+
+    if (!experimentExists) {
+      return res.status(400).json({
+        success: false,
+        message: "Experiment does not exist",
+      });
+    }
+
+    // 3. Create outcome
     const newOutcome: Outcome = {
       id: nextId++,
       experimentId,
@@ -52,15 +61,18 @@ if (!experimentExists) {
       createdAt: new Date(),
     };
 
+    // 4. Store outcome
     outcomes.push(newOutcome);
 
-    res.status(201).json({
+    // 5. Return response
+    return res.status(201).json({
       success: true,
+      message: "Outcome created successfully",
       data: newOutcome,
     });
 
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to create outcome",
     });
@@ -73,8 +85,9 @@ if (!experimentExists) {
  * Get all outcomes
  */
 router.get("/", (_req: Request, res: Response) => {
-  res.json({
+  return res.json({
     success: true,
+    count: outcomes.length,
     data: outcomes,
   });
 });
@@ -85,18 +98,32 @@ router.get("/", (_req: Request, res: Response) => {
  * Get outcomes for a specific experiment
  */
 router.get("/:experimentId", (req: Request, res: Response) => {
+  try {
+    const experimentId = Number(req.params.experimentId);
 
-  const experimentId = Number(req.params.experimentId);
+    if (!experimentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Valid experimentId is required",
+      });
+    }
 
-  const filtered = outcomes.filter(
-    outcome => outcome.experimentId === experimentId
-  );
+    const filteredOutcomes = outcomes.filter(
+      (outcome) => outcome.experimentId === experimentId
+    );
 
-  res.json({
-    success: true,
-    data: filtered,
-  });
+    return res.json({
+      success: true,
+      count: filteredOutcomes.length,
+      data: filteredOutcomes,
+    });
 
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch outcomes",
+    });
+  }
 });
 
 
