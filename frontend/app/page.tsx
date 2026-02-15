@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTheme } from "./components/ThemeProvider";
 import Button from "./components/ui/Button";
+import BulbSvg from "@/components/ui/bulb-svg";
+import QuestionMark from "@/components/ui/question-mark";
+import LibraryIcon from "@/components/ui/library-icon";
+import ChartHistogramIcon from "@/components/ui/chart-histogram-icon";
+import BrightnessDownIcon from "@/components/ui/brightness-down-icon";
+import MoonIcon from "@/components/ui/moon-icon";
 
 
 export default function HomePage() {
@@ -61,27 +67,23 @@ return (
   onClick={toggleTheme}
   aria-label="Toggle theme"
   className="
-    flex items-center justify-center
-    w-11 h-11
-    rounded-full
+  flex items-center justify-center
+  w-11 h-11
+  rounded-full
+  transition-all duration-300
+  hover:bg-slate-200
+  dark:hover:bg-slate-800
+  hover:scale-105
+  active:scale-95
+"
 
-    bg-white/40 dark:bg-slate-800/60
-    backdrop-blur-md
-
-    border border-white/30 dark:border-slate-700
-
-    shadow-[0_4px_12px_rgba(0,0,0,0.12)]
-
-    transition-all duration-300
-
-    hover:scale-105
-    hover:shadow-[0_8px_18px_rgba(0,0,0,0.18)]
-    active:scale-95
-  "
 >
-  <span className="text-lg">
-    {dark ? "☀️" : "🌙"}
-  </span>
+  {dark ? (
+  <BrightnessDownIcon className="w-5 h-5" />
+) : (
+  <MoonIcon className="w-5 h-5" />
+)}
+
 </button>
 
 
@@ -190,13 +192,18 @@ return (
     tracking-tight
 
     bg-[#7EACB5]
-    backdrop-blur-xl
-    border border-white/20
-    text-white
+    text-slate-900
+    dark:text-white
+
+    hover:bg-[#6e9ca5]
+
+    border border-slate-300
+    dark:border-white/20
   "
 >
   Learn More
 </Button>
+
 
 </Link>
 
@@ -212,22 +219,22 @@ return (
       <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <FeatureCard
-            emoji="💡"
+            emoji={<BulbSvg className="w-6 h-6" />}
             title="Share Ideas"
             desc="Post and discuss ideas openly with your community to spark innovation."
           />
           <FeatureCard
-            emoji="🧪"
+            emoji={<QuestionMark className="w-6 h-6" />}
             title="Run Experiments"
             desc="Validate ideas through focused real-world experiments and tests."
           />
           <FeatureCard
-            emoji="📊"
+            emoji={<ChartHistogramIcon className="w-6 h-6" />}
             title="Track Outcomes"
             desc="Capture results and build collective knowledge from detailed outcomes."
           />
           <FeatureCard
-            emoji="🧠"
+            emoji={<LibraryIcon className="w-6 h-6" />}
             title="Reflect & Learn"
             desc="Improve continuously through shared insights and reflection."
           />
@@ -306,7 +313,7 @@ function FeatureCard({
   title,
   desc,
 }: {
-  emoji: string;
+  emoji: React.ReactNode;
   title: string;
   desc: string;
 }) {
