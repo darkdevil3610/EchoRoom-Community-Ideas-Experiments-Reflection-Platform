@@ -84,6 +84,7 @@ export function ExperimentForm() {
                     >
                         Hypothesis
                     </label>
+
                     <textarea
                         id="hypothesis"
                         name="hypothesis"
@@ -91,9 +92,14 @@ export function ExperimentForm() {
                         rows={4}
                         value={formData.hypothesis}
                         onChange={handleChange}
+                        maxLength={300}
                         className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-800 dark:border-slate-700"
                         placeholder="What do you expect to happen?"
                     />
+
+                    <p className="text-xs text-right mt-1 text-gray-500">
+                        {formData.hypothesis.length}/300 characters
+                    </p>
                 </div>
 
                 {/* Dates Row */}
