@@ -6,10 +6,13 @@ import { CalendarIcon, ArrowRight } from "lucide-react";
 import Container from "./ui/Container";
 import ReactMarkdown from "react-markdown";
 
+import { useExperiments } from "../context/ExperimentsContext";
+
 export function ExperimentForm() {
     const [preview, setPreview] = useState(false);
 
     const router = useRouter();
+    const { addExperiment } = useExperiments();
     const [formData, setFormData] = useState({
         title: "",
         hypothesis: "",
@@ -38,13 +41,17 @@ export function ExperimentForm() {
         e.preventDefault();
         setIsSubmitting(true);
 
-        console.log("Submitting Experiment Data:", formData);
 
-        setTimeout(() => {
-            alert("Experiment created successfully!");
+
+            // Simulate a short delay for UX
+            setTimeout(() => {
+                setIsSubmitting(false);
+                router.push("/experiments");
+            }, 500);
+        } catch (error) {
+            console.error("Failed to create experiment:", error);
             setIsSubmitting(false);
-            router.push("/experiments");
-        }, 1000);
+        }
     };
 
     return (
