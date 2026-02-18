@@ -11,9 +11,9 @@ interface ApiResponse<T> {
   outcomes?: T;
 }
 
-export async function apiFetch<T>(endpoint: string): Promise<T> {
+export async function apiFetch<T>(endpoint: string, init?: RequestInit): Promise<T> {
   try {
-    const res = await fetch(`${API_BASE_URL}${endpoint}`);
+    const res = await fetch(`${API_BASE_URL}${endpoint}`, init);
 
     let data: ApiResponse<T>;
 
