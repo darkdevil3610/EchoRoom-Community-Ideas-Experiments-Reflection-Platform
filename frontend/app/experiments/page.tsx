@@ -7,6 +7,9 @@ import LoadingState from "../components/LoadingState";
 import ErrorState from "../components/ErrorState";
 import BackButton from "../components/BackButton";
 import ChartHistogramIcon from "@/components/ui/chart-histogram-icon";
+import { useRouter } from "next/navigation";
+import Button from "@/app/components/ui/Button";
+import { MagicCard } from "@/components/ui/magic-card";
 
 interface Experiment {
   id: number;
@@ -75,6 +78,7 @@ export default function ExperimentsPage() {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchExperiments = async () => {
@@ -127,33 +131,56 @@ export default function ExperimentsPage() {
       <div className="section">
         {/* Header */}
         <div className="mb-8">
-          <div className="mb-4">
-            <BackButton />
-          </div>
+  <div className="mb-4">
+    <BackButton />
+  </div>
 
-          <div className="flex items-center gap-3 mb-3">
-            <ChartHistogramIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-              Experiments
-            </h1>
-          </div>
+  <div className="flex items-center justify-between mb-3">
+    <div className="flex items-center gap-3">
+      <ChartHistogramIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+      <h1 className="text-4xl font-bold text-black dark:text-white">
+        Experiments
+      </h1>
+    </div>
 
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl">
-            Track and manage experiments to test ideas and learn quickly.
-          </p>
-        </div>
+    <Button onClick={() => router.push("/experiments/create")}>
+      + New Experiment
+    </Button>
+  </div>
+
+  <p className="text-lg max-w-2xl text-black dark:text-white">
+    Track and manage experiments to test ideas and learn quickly.
+  </p>
+</div>
+
 
         {experiments.length === 0 ? (
-          <div className="card text-center py-16">
-            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
-              No experiments yet
-            </h2>
+  <div className="flex justify-center mt-14">
+    <MagicCard
+      className="p-[1px] rounded-xl w-full"
+      gradientColor="rgba(59,130,246,0.6)"
+    >
+      <div className="bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-xl border border-white/10 px-10 py-12 text-center">
 
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Start your first experiment to test and validate ideas.
-            </p>
-          </div>
-        ) : (
+        <ChartHistogramIcon className="w-10 h-10 mx-auto mb-5 text-blue-400 opacity-80" />
+
+        <h3 className="text-xl font-semibold text-black dark:text-white mb-2">
+          No experiments yet
+        </h3>
+
+        <p className="text-slate-500 text-sm leading-relaxed mb-7">
+          Start your first experiment to test and validate ideas.
+        </p>
+
+        <Button onClick={() => router.push("/experiments/create")}>
+          + Create First Experiment
+        </Button>
+
+      </div>
+    </MagicCard>
+  </div>
+) : (
+
           <div className="grid gap-6 md:grid-cols-2">
             {experiments.map((exp) => (
               <div key={exp.id} className="card">

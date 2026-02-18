@@ -16,6 +16,10 @@ body {
 body {
   margin: 0;
 }
+* {
+  cursor: none !important;
+}
+
 
 /* ========================= */
 /* GLOBAL DESIGN SYSTEM */

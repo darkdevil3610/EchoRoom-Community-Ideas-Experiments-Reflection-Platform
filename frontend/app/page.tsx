@@ -16,6 +16,7 @@ import WifiOffIcon from "@/components/ui/wifi-off-icon";
 import { Dock, DockIcon } from "@/components/ui/dock";
 import { useRouter } from "next/navigation";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
+import { MagicCard } from "@/components/ui/magic-card";
 
 export default function HomePage() {
   const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
@@ -244,19 +245,41 @@ function FeatureCard({
   desc: string;
 }) {
   return (
-    <div className="group bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-2 transition duration-300">
-      <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 mb-4 group-hover:scale-110 transition">
-        {emoji}
+    <MagicCard
+  className="
+    p-[1px]
+    rounded-2xl
+    transition
+    duration-300
+    hover:-translate-y-2
+    hover:shadow-2xl
+  "
+  gradientColor="rgba(59,130,246,0.6)"
+>
+  <div className="
+    group
+    bg-white dark:bg-slate-800
+    p-6
+    rounded-2xl
+    border border-slate-200 dark:border-slate-700
+  ">
+
+        <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 mb-4 group-hover:scale-110 transition">
+          {emoji}
+        </div>
+
+        <h3 className="font-semibold text-lg text-slate-800 dark:text-white">
+          {title}
+        </h3>
+
+        <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+          {desc}
+        </p>
       </div>
-      <h3 className="font-semibold text-lg text-slate-800 dark:text-white">
-        {title}
-      </h3>
-      <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-        {desc}
-      </p>
-    </div>
+    </MagicCard>
   );
 }
+
 
 function NavbarDock() {
   const router = useRouter();

@@ -14,7 +14,7 @@ import { MagicCard } from "@/components/ui/magic-card";
 
 export default function AboutPage() {
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen">
       
       
 
@@ -195,17 +195,28 @@ function ValueCard({
   description: string;
 }) {
   return (
-    <div className="group bg-white/80 dark:bg-slate-800/70 backdrop-blur p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300">
-      <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4 group-hover:scale-110 transition">
-        {icon}
+    <MagicCard
+      className="p-[1px] rounded-2xl"
+      gradientColor="rgba(59,130,246,0.6)"
+    >
+      <div className="group bg-white/80 dark:bg-slate-800/70 backdrop-blur p-6 md:p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:-translate-y-1 transition duration-300">  
+        <div className="flex items-center gap-2 mb-4">  
+        </div>
+        {/* Icon */}
+        <div className="w-12 h-12 flex items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 mb-4 group-hover:scale-110 transition">
+          {icon}
+        </div>
+        {/* Title */}
+        <h3 className="font-semibold text-xl text-slate-800 dark:text-white mb-3">
+          {title}
+        </h3>
+
+        {/* Description */}
+        <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+          {description}
+        </p>
       </div>
-      <h3 className="font-semibold text-xl text-slate-800 dark:text-white mb-3">
-        {title}
-      </h3>
-      <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-        {description}
-      </p>
-    </div>
+    </MagicCard>
   );
 }
 
