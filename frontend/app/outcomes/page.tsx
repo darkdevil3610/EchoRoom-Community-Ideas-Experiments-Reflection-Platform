@@ -10,6 +10,7 @@ import ErrorState from "../components/ErrorState";
 import BackButton from "../components/BackButton";
 import Button from "@/app/components/ui/Button";
 import { MagicCard } from "@/components/ui/magic-card";
+import ChartLineIcon from "@/components/ui/chart-line-icon";
 
 interface Outcome {
   id: number;
@@ -86,11 +87,16 @@ export default function OutcomesPage() {
     <PageLayout>
       <div className="section">
         <div className="mb-4">
-          <BackButton />
-        </div>
+  <Button
+    onClick={() => router.push("/experiments")}
+    className="rounded-full px-6 py-2"
+  >
+    ← Back to Experiments
+  </Button>
+</div>
 
         <div className="flex items-center gap-3 mb-6">
-          <TrendingUp className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+          <ChartLineIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
             Outcomes
           </h1>
@@ -108,7 +114,7 @@ export default function OutcomesPage() {
       gradientColor="rgba(59,130,246,0.6)"
     >
       <div className="bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/10 px-10 py-16 text-center">
-        <TrendingUp className="w-12 h-12 mx-auto mb-6 text-blue-400 opacity-80" />
+        <ChartLineIcon className="w-12 h-12 mx-auto mb-6 text-blue-400 opacity-80" />
 
         <h3 className="text-2xl font-semibold text-black dark:text-white mb-3">
           No outcomes yet

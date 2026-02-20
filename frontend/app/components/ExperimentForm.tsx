@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { CalendarIcon, ArrowRight } from "lucide-react";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
-
+import { apiFetch } from "../lib/api";
 import Container from "./ui/Container";
 import Button from "./ui/Button";
 import { Calendar } from "@/components/ui/calendar";
@@ -15,14 +15,26 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { MagicCard } from "@/components/ui/magic-card";
-
+import { useEffect } from "react";
 import { useExperiments } from "../context/ExperimentsContext";
-import { useIdeas } from "../context/IdeasContext";
+
 
 export function ExperimentForm() {
   const router = useRouter();
   const { addExperiment } = useExperiments();
-  const { ideas } = useIdeas();
+  const [ideas, setIdeas] = useState<any[]>([]);
+  useEffect(() => {
+  const fetchIdeas = async () => {
+    try {
+      const data = await apiFetch<any[]>("/ideas");
+      setIdeas(data);
+    } catch (error) {
+      console.error("Failed to fetch ideas:", error);
+    }
+  };
+
+  fetchIdeas();
+}, []);
 
   const [preview, setPreview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,28 +56,30 @@ export function ExperimentForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      addExperiment({
+  try {
+    await apiFetch("/experiments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         title: formData.title,
         description: formData.hypothesis,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-        linkedIdeaId: formData.linkedIdeaId || undefined,
-      });
+        status: "planned", // required by backend
+      }),
+    });
 
-      setTimeout(() => {
-        setIsSubmitting(false);
-        router.push("/experiments");
-      }, 500);
-    } catch (error) {
-      console.error("Failed to create experiment:", error);
-      setIsSubmitting(false);
-    }
-  };
+    router.push("/experiments");
+  } catch (error) {
+    console.error("Failed to create experiment:", error);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <Container className="max-w-3xl py-12 space-y-6">

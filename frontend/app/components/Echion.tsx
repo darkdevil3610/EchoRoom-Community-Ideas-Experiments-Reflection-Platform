@@ -59,15 +59,20 @@ export default function Echion() {
     setResponse(intent ? intent.response : fallbackResponse);
   };
   useEffect(() => {
-  if (open) return; // stop bubble when chat is open
+  if (open) {
+    setShowBubble(false);
+    return;
+  }
 
   const interval = setInterval(() => {
     setShowBubble(true);
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setShowBubble(false);
-    }, 4000); // visible for 4s
-  }, 8000); // every 8s
+    }, 4000);
+
+    return () => clearTimeout(timeout);
+  }, 30000);
 
   return () => clearInterval(interval);
 }, [open]);
