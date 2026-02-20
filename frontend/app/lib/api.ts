@@ -43,11 +43,15 @@ export async function apiFetch<T>(endpoint: string, init?: RequestInit): Promise
       data.outcomes;
 
 
-    if (!result) {
-      throw new Error("No data returned");
-    }
+    // allow empty response for DELETE
+if (result === undefined) {
+  if (init?.method === "DELETE") {
+    return undefined as T;
+  }
+  throw new Error("No data returned");
+}
 
-    return result;
+return result as T;
 
   } catch (error: any) {
 

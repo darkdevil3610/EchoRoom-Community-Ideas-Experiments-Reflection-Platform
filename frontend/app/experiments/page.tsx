@@ -10,6 +10,7 @@ import BackButton from "../components/BackButton";
 import Button from "@/app/components/ui/Button";
 import ChartHistogramIcon from "@/components/ui/chart-histogram-icon";
 import { MagicCard } from "@/components/ui/magic-card";
+import TrashIcon from "@/components/ui/trash-icon";
 
 interface Experiment {
   id: number;
@@ -78,6 +79,8 @@ export default function ExperimentsPage() {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deleteExperiment, setDeleteExperiment] = useState<Experiment | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -97,6 +100,28 @@ export default function ExperimentsPage() {
 
     fetchExperiments();
   }, []);
+  const handleDelete = async () => {
+  if (!deleteExperiment || deleting) return;
+
+  try {
+    setDeleting(true);
+
+    await apiFetch(`/experiments/${deleteExperiment.id}`, {
+      method: "DELETE",
+    });
+
+    
+    setExperiments(prev =>
+      prev.filter(exp => exp.id !== deleteExperiment.id)
+    );
+
+    setDeleteExperiment(null);
+  } catch (err: any) {
+    alert(err.message || "Failed to delete experiment");
+  } finally {
+    setDeleting(false);
+  }
+};
 
   const getStatusTextColor = (status: string) => {
     if (status === "completed") return "text-green-600 dark:text-green-400";
@@ -198,38 +223,96 @@ export default function ExperimentsPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             {experiments.map((exp) => (
-              <div key={exp.id} className="card">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  {exp.title}
-                </h2>
+  <MagicCard
+    key={exp.id}
+    className="p-[1px] rounded-xl relative"
+    gradientColor="rgba(59,130,246,0.6)"
+  >
+    <div className="relative p-5 bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-xl border border-white/10 h-full flex flex-col">
 
-                <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
-                  {exp.description}
-                </p>
+      {/* Delete Button */}
+      <button
+        onClick={() => setDeleteExperiment(exp)}
+        className="absolute top-4 right-4 p-2 text-red-400 hover:text-red-600 transition"
+      >
+        <TrashIcon className="w-5 h-5" />
+      </button>
 
-                <div className="flex justify-between items-center mb-2">
-                  <span
-                    className={`text-sm font-medium ${getStatusTextColor(exp.status)}`}
-                  >
-                    Status: {exp.statusLabel}
-                  </span>
+      <h2 className="text-xl font-semibold text-black dark:text-white mb-2 pr-8">
+        {exp.title}
+      </h2>
 
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {exp.progress}%
-                  </span>
-                </div>
+      <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+        {exp.description}
+      </p>
 
-                <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2">
-                  <div
-                    className={`h-2 rounded-full ${getProgressColor(exp.status)}`}
-                    style={{ width: `${exp.progress}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+      <div className="flex justify-between items-center mb-2">
+        <span
+          className={`text-sm font-medium ${getStatusTextColor(exp.status)}`}
+        >
+          Status: {exp.statusLabel}
+        </span>
+
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          {exp.progress}%
+        </span>
+      </div>
+
+      <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-2">
+        <div
+          className={`h-2 rounded-full ${getProgressColor(exp.status)}`}
+          style={{ width: `${exp.progress}%` }}
+        />
+      </div>
+
+    </div>
+  </MagicCard>
+))}
           </div>
         )}
       </div>
+      {deleteExperiment && (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+    onClick={() => !deleting && setDeleteExperiment(null)}
+  >
+    <div onClick={(e) => e.stopPropagation()}>
+      <MagicCard
+        className="p-[1px] rounded-2xl"
+        gradientColor="rgba(59,130,246,0.6)"
+      >
+        <div className="bg-white/10 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl px-7 py-7 w-[380px]">
+
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-black dark:text-white">
+              Delete Experiment
+            </h2>
+            <p className="text-slate-600 dark:text-slate-200 text-sm mt-2 leading-relaxed">
+              "{deleteExperiment.title}" will be permanently removed.
+            </p>
+          </div>
+
+          <div className="flex gap-4">
+            <Button
+              className={`w-full ${deleting ? "opacity-50 pointer-events-none" : ""}`}
+              onClick={() => setDeleteExperiment(null)}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              className={`w-full ${deleting ? "opacity-50 pointer-events-none" : ""}`}
+              onClick={handleDelete}
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+
+        </div>
+      </MagicCard>
+    </div>
+  </div>
+)}
     </PageLayout>
   );
 }
