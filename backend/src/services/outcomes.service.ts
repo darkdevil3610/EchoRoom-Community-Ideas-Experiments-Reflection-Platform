@@ -1,4 +1,5 @@
 // backend/src/services/outcomes.service.ts
+import { getExperimentById } from "./experiments.service";
 
 export interface Outcome {
   id: number;
@@ -36,10 +37,16 @@ export const createOutcome = (
 
 
 // Get all outcomes
-export const getAllOutcomes = (): Outcome[] => {
-  return outcomes;
-};
+export const getAllOutcomes = () => {
+  return outcomes.map((o) => {
+    const experiment = getExperimentById(o.experimentId);
 
+    return {
+      ...o,
+      experimentTitle: experiment?.title || "Unknown Experiment",
+    };
+  });
+};
 
 // Get outcomes by experiment ID
 export const getOutcomesByExperimentId = (
@@ -50,4 +57,18 @@ export const getOutcomesByExperimentId = (
     outcome => outcome.experimentId === experimentId
   );
 
+};
+
+// Update outcome result
+export const updateOutcomeResult = (
+  id: number,
+  result: string
+): Outcome | null => {
+
+  const outcome = outcomes.find(o => o.id === id);
+
+  if (!outcome) return null;
+
+  outcome.result = result;
+  return outcome;
 };

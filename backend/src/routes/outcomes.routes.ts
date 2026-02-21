@@ -3,7 +3,8 @@ import { Router, Request, Response } from "express";
 import {
   createOutcome,
   getAllOutcomes,
-  getOutcomesByExperimentId
+  getOutcomesByExperimentId,
+  updateOutcomeResult
 } from "../services/outcomes.service";
 
 const router = Router();
@@ -86,5 +87,37 @@ router.get("/:experimentId", (req: Request, res: Response) => {
     });
   }
 });
+router.put("/:id", (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const { result } = req.body;
 
+    if (!id || !result) {
+      return res.status(400).json({
+        success: false,
+        message: "id and result are required",
+      });
+    }
+
+    const updated = updateOutcomeResult(id, result);
+
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        message: "Outcome not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      data: updated,
+    });
+
+  } catch {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to update outcome",
+    });
+  }
+});
 export default router;

@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { TrendingUp, FileText } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PageLayout } from "../community/PageLayout";
 import { apiFetch } from "../lib/api";
 import LoadingState from "../components/LoadingState";
 import ErrorState from "../components/ErrorState";
-import BackButton from "../components/BackButton";
 import Button from "@/app/components/ui/Button";
 import { MagicCard } from "@/components/ui/magic-card";
 import ChartLineIcon from "@/components/ui/chart-line-icon";
@@ -20,18 +18,8 @@ interface Outcome {
   createdAt: string;
 }
 
-const outcomeColors: Record<string, string> = {
-  Success:
-    "text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30",
-  Mixed:
-    "text-yellow-600 dark:text-yellow-400 bg-yellow-100 dark:bg-yellow-900/30",
-  Failed:
-    "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30",
-};
-
 const formatDate = (dateString?: string): string => {
   if (!dateString) return "Unknown date";
-
   const parsed = new Date(dateString);
   if (Number.isNaN(parsed.getTime())) return "Unknown date";
 
@@ -44,6 +32,7 @@ const formatDate = (dateString?: string): string => {
 
 export default function OutcomesPage() {
   const [outcomes, setOutcomes] = useState<Outcome[]>([]);
+  const [selectedOutcome, setSelectedOutcome] = useState<Outcome | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,8 +44,8 @@ export default function OutcomesPage() {
         setLoading(true);
         setError(null);
 
-        const outcomesData = await apiFetch<Outcome[]>("/outcomes");
-        setOutcomes(outcomesData);
+        const data = await apiFetch<Outcome[]>("/outcomes");
+        setOutcomes(data);
       } catch (err: any) {
         setError(err.message || "Failed to fetch outcomes");
       } finally {
@@ -66,6 +55,24 @@ export default function OutcomesPage() {
 
     fetchOutcomes();
   }, []);
+
+  const updateResult = async (result: "Success" | "Failed") => {
+    if (!selectedOutcome) return;
+
+    try {
+      await apiFetch(`/outcomes/${selectedOutcome.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ result }),
+      });
+
+      const refreshed = await apiFetch<Outcome[]>("/outcomes");
+      setOutcomes(refreshed);
+      setSelectedOutcome(null);
+    } catch {
+      alert("Failed to update outcome result");
+    }
+  };
 
   if (loading) {
     return (
@@ -86,113 +93,125 @@ export default function OutcomesPage() {
   return (
     <PageLayout>
       <div className="section">
+
         <div className="mb-4">
-  <Button
-    onClick={() => router.push("/experiments")}
-    className="rounded-full px-6 py-2"
-  >
-    ← Back to Experiments
-  </Button>
-</div>
+          <Button
+            onClick={() => router.push("/experiments")}
+            className="rounded-full px-6 py-2"
+          >
+            ← Back to Experiments
+          </Button>
+        </div>
 
         <div className="flex items-center gap-3 mb-6">
           <ChartLineIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-4xl font-bold text-black dark:text-white">
             Outcomes
           </h1>
         </div>
 
-        <p className="text-lg text-gray-600 dark:text-gray-300 mb-10">
-          Outcomes are the results of your experiments. Track what works,
-          what doesn't, and reflect on each result.
-        </p>
-
         {outcomes.length === 0 ? (
-  <div className="mt-10">
-    <MagicCard
-      className="p-[1px] rounded-2xl w-full"
-      gradientColor="rgba(59,130,246,0.6)"
-    >
-      <div className="bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-2xl border border-white/10 px-10 py-16 text-center">
-        <ChartLineIcon className="w-12 h-12 mx-auto mb-6 text-blue-400 opacity-80" />
-
-        <h3 className="text-2xl font-semibold text-black dark:text-white mb-3">
-          No outcomes yet
-        </h3>
-
-        <p className="text-slate-400 text-sm leading-relaxed mb-8 max-w-xl mx-auto">
-          Run experiments to generate outcomes and start reflecting on results.
-        </p>
-
-        <Button
-          onClick={() => router.push("/experiments")}
-          className="rounded-full px-8 py-3"
-        >
-          View Experiments
-        </Button>
-      </div>
-    </MagicCard>
-  </div>
-) : (
-
-
-          <div className="space-y-6">
+          <div className="flex justify-center mt-14">
+            <MagicCard
+              className="p-[1px] rounded-xl w-full"
+              gradientColor="rgba(59,130,246,0.6)"
+            >
+              <div className="bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-xl border border-white/10 px-10 py-12 text-center">
+                <h3 className="text-xl font-semibold text-black dark:text-white mb-2">
+                  No outcomes yet
+                </h3>
+                <p className="text-slate-500 text-sm mb-6">
+                  Complete experiments to generate outcomes.
+                </p>
+              </div>
+            </MagicCard>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
             {outcomes.map((outcome) => (
               <div
                 key={outcome.id}
-                className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-6"
+                onClick={() => setSelectedOutcome(outcome)}
+                className="cursor-pointer hover:scale-[1.02] transition"
               >
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                <MagicCard
+                  className="p-[1px] rounded-xl"
+                  gradientColor="rgba(59,130,246,0.6)"
+                >
+                  <div className="p-6 bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-xl border border-white/10">
+
+                    <h3 className="text-xl font-semibold text-black dark:text-white mb-2">
                       Experiment #{outcome.experimentId}
                     </h3>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Outcome #{outcome.id}
-                    </span>
-                  </div>
 
-                  <span
-                    className={`text-xs font-medium px-3 py-1 rounded-full ${
-                      outcomeColors[outcome.result] ||
-                      "bg-gray-100 dark:bg-gray-700"
-                    }`}
-                  >
-                    {outcome.result}
-                  </span>
-                </div>
-
-                {outcome.notes && (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg p-4 mb-4">
-                    <div className="flex items-start gap-2">
-                      <FileText className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        {outcome.notes}
-                      </p>
+                    <div className="text-sm text-gray-500 mb-3">
+                      {formatDate(outcome.createdAt)}
                     </div>
+
+                    <div className="text-sm">
+                      Result:{" "}
+                      <span className="font-medium">
+                        {outcome.result}
+                      </span>
+                    </div>
+
                   </div>
-                )}
-
-                <div className="flex items-center justify-between mt-4">
-                  <span className="text-xs text-gray-500">
-                    {formatDate(outcome.createdAt)}
-                  </span>
-
-                  <Button
-                    onClick={() =>
-                      router.push(
-                        `/reflection/new?outcomeId=${outcome.id}`
-                      )
-                    }
-                    className="rounded-full px-4 py-2 text-sm"
-                  >
-                    + Add Reflection
-                  </Button>
-                </div>
+                </MagicCard>
               </div>
             ))}
           </div>
         )}
+
+        {/* Modal */}
+        {selectedOutcome && (
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+            onClick={() => setSelectedOutcome(null)}
+          >
+            <div onClick={(e) => e.stopPropagation()}>
+              <MagicCard
+                className="p-[1px] rounded-2xl w-[400px]"
+                gradientColor="rgba(59,130,246,0.6)"
+              >
+                <div className="bg-white/10 dark:bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 space-y-6">
+
+                  <h2 className="text-xl font-bold text-black dark:text-white">
+                    Experiment #{selectedOutcome.experimentId}
+                  </h2>
+
+                  <div className="flex gap-4">
+                    <Button
+                      onClick={() => updateResult("Success")}
+                      className="w-full"
+                    >
+                      Mark Success
+                    </Button>
+
+                    <Button
+                      onClick={() => updateResult("Failed")}
+                      className="w-full"
+                    >
+                      Mark Failed
+                    </Button>
+                  </div>
+
+                  <Button
+                    onClick={() =>
+                      router.push(
+                        `/reflection/new?outcomeId=${selectedOutcome.id}`
+                      )
+                    }
+                    className="w-full rounded-full"
+                  >
+                    + Write Reflection
+                  </Button>
+
+                </div>
+              </MagicCard>
+            </div>
+          </div>
+        )}
+
       </div>
     </PageLayout>
   );

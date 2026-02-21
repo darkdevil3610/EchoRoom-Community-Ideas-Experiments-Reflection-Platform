@@ -69,7 +69,7 @@ export function ExperimentForm() {
       body: JSON.stringify({
         title: formData.title,
         description: formData.hypothesis,
-        status: "planned", // required by backend
+        status: "in-progress",
       }),
     });
 

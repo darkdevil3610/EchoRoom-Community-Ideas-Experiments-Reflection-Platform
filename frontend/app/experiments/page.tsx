@@ -90,7 +90,10 @@ export default function ExperimentsPage() {
         setError(null);
 
         const data = await apiFetch<BackendExperiment[]>("/experiments");
-        setExperiments(data.map(normalizeExperiment));
+        const normalized = data.map(normalizeExperiment);
+        setExperiments(
+          normalized.filter(exp => exp.status !== "completed")
+        );
       } catch (err: any) {
         setError(err.message || "Failed to fetch experiments");
       } finally {
@@ -223,8 +226,12 @@ export default function ExperimentsPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             {experiments.map((exp) => (
+  <div
+  key={exp.id}
+  onClick={() => router.push(`/experiments/${exp.id}`)}
+  className="cursor-pointer hover:scale-[1.02] transition"
+>
   <MagicCard
-    key={exp.id}
     className="p-[1px] rounded-xl relative"
     gradientColor="rgba(59,130,246,0.6)"
   >
@@ -232,7 +239,10 @@ export default function ExperimentsPage() {
 
       {/* Delete Button */}
       <button
-        onClick={() => setDeleteExperiment(exp)}
+  onClick={(e) => {
+    e.stopPropagation();
+    setDeleteExperiment(exp);
+  }}
         className="absolute top-4 right-4 p-2 text-red-400 hover:text-red-600 transition"
       >
         <TrashIcon className="w-5 h-5" />
@@ -267,6 +277,7 @@ export default function ExperimentsPage() {
 
     </div>
   </MagicCard>
+  </div>
 ))}
           </div>
         )}

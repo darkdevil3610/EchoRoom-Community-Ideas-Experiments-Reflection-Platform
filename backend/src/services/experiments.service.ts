@@ -12,7 +12,7 @@ export interface Experiment {
   title: string;
   description: string;
   status: ExperimentStatus;
-  outcome?: string;
+  outcomeResult?: "Success" | "Failed" | null;
   createdAt: Date;
 }
 
@@ -88,8 +88,8 @@ export const updateExperiment = (
   if (updates.status !== undefined)
     experiment.status = updates.status;
 
-  if (updates.outcome !== undefined)
-    experiment.outcome = updates.outcome;
+  if (updates.outcomeResult !== undefined)
+  experiment.outcomeResult = updates.outcomeResult;
 
   return experiment;
 };

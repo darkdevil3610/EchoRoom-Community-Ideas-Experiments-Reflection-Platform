@@ -9,6 +9,8 @@ import { MagicCard } from "@/components/ui/magic-card";
 
 interface Outcome {
   id: number;
+  experimentId: number;
+  experimentTitle: string;
   result: string;
 }
 
@@ -50,14 +52,16 @@ export default function NewReflectionPage() {
       setLoading(true);
       setError(null);
 
-      await apiFetch("/reflection", {
-        method: "POST",
-        body: JSON.stringify({
-          outcomeId: selectedOutcome,
-          content,
-        }),
-      });
-
+      await apiFetch("/reflections", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    outcomeId: selectedOutcome,
+    content,
+  }),
+});
       router.push("/reflection");
     } catch (err: any) {
       setError(err.message || "Failed to create reflection");
@@ -116,8 +120,8 @@ export default function NewReflectionPage() {
                 <option value="">Choose outcome</option>
                 {outcomes.map((o) => (
                   <option key={o.id} value={o.id}>
-                    {o.result}
-                  </option>
+  {o.experimentTitle}
+</option>
                 ))}
               </select>
 

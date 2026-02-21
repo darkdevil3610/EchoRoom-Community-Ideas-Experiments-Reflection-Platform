@@ -31,6 +31,8 @@ interface ReflectionApiResponse {
 
 interface OutcomeApiResponse {
   id: number;
+  experimentId: number;
+  experimentTitle: string;
   result: string;
 }
 
