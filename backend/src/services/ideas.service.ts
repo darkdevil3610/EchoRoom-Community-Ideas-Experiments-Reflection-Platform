@@ -85,19 +85,24 @@ export const createDraft = (title: string, description: string): Idea => {
 };
 
 // Update a draft (title/description)
-export const updateDraft = (id: number, title: string, description: string): Idea | null => {
+export const updateDraft = (
+  id: number,
+  title: string,
+  description: string,
+  version: number
+): Idea | null => {
   const idea = ideas.find(i => i.id === id);
 
   if (!idea) return null;
 
-  if (idea.status !== "draft") {
-    throw new Error("Only draft ideas can be updated");
-  }
+if (idea.version !== version) {
+  throw new ConflictError("Idea has been modified by another user");
+}
 
-  idea.title = title;
-  idea.description = description;
-  idea.updatedAt = new Date().toISOString();
-
+idea.title = title;
+idea.description = description;
+idea.version += 1; // increment version
+idea.updatedAt = new Date().toISOString();
   return idea;
 };
 
