@@ -8,6 +8,8 @@ import LoadingState from "@/app/components/LoadingState";
 import ErrorState from "@/app/components/ErrorState";
 import Button from "@/app/components/ui/Button";
 import { MagicCard } from "@/components/ui/magic-card";
+import { RetroGrid } from "@/components/ui/retro-grid";
+
 interface Experiment {
   id: number;
   title: string;
@@ -104,6 +106,10 @@ export default function ExperimentDetailPage() {
   }
 
   return (
+    <>
+     <div className="fixed inset-0 z-0 pointer-events-none">
+      <RetroGrid />
+    </div>
   <PageLayout>
     <div className="flex justify-center py-16">
       <MagicCard
@@ -175,5 +181,6 @@ export default function ExperimentDetailPage() {
       </MagicCard>
     </div>
   </PageLayout>
+  </>
 );
 }
