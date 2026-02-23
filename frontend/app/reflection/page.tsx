@@ -87,13 +87,10 @@ export default function ReflectionPage() {
         setLoading(true);
         setError(null);
 
-        const [reflectionsRes, outcomesRes] = await Promise.all([
-        apiFetch<any>("/reflections"),
-        apiFetch<any>("/outcomes"),
+        const [reflectionsData, outcomesData] = await Promise.all([
+          apiFetch<ReflectionApiResponse[]>("/reflections"),
+          apiFetch<OutcomeApiResponse[]>("/outcomes"),
         ]);
-
-        const reflectionsData = reflectionsRes.data;
-        const outcomesData = outcomesRes.data;
 
         const outcomeMap = new Map<number, OutcomeApiResponse>(
           outcomesData.map((o) => [o.id, o])
