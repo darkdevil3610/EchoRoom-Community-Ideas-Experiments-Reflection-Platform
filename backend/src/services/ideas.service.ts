@@ -13,13 +13,15 @@ export interface Idea {
 
 
 // allowed transitions
-const allowedTransitions: Record<IdeaStatus, IdeaStatus[]> = {
+import { StateMachine } from "../lib/stateMachine";
+
+const ideaStateMachine = new StateMachine<IdeaStatus>({
   draft: ["proposed"],
   proposed: ["experiment"],
   experiment: ["outcome"],
   outcome: ["reflection"],
   reflection: [],
-};
+});
 
 // Get all ideas
 export const getAllIdeas = (): Idea[] => {
