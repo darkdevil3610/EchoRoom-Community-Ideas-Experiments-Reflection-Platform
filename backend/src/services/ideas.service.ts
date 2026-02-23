@@ -101,11 +101,8 @@ export const updateIdeaStatus = (id: number, status: IdeaStatus): Idea | null =>
 
   if (!idea) return null;
 
-  const allowed = allowedTransitions[idea.status];
-
-  if (!allowed.includes(status)) {
-    throw new Error(`Invalid transition from '${idea.status}' to '${status}'`);
-  }
+ idea.status = ideaStateMachine.transition(idea.status, status);
+idea.updatedAt = new Date().toISOString();
 
   idea.status = status;
   idea.updatedAt = new Date().toISOString();
