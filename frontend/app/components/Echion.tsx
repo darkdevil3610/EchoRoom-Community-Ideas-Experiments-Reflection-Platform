@@ -13,14 +13,50 @@ export default function Echion() {
   const [response, setResponse] = useState<string | null>(null);
   const [input, setInput] = useState("");
   const [showBubble, setShowBubble] = useState(false);
-  
+  const getTimeGreeting = () => {
+  const hour = new Date().getHours();
+
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+};
   const handleUserInput = () => {
     const text = input
       .toLowerCase()
       .replace(/[^\w\s]/g, "")
       .trim();
 
-    const words = text.split(/\s+/);
+    const greetings = [
+  "hi",
+  "hello",
+  "hey",
+  "good morning",
+  "good afternoon",
+  "good evening"
+];
+
+if (greetings.includes(text)) {
+  const timeGreeting = getTimeGreeting();
+
+  setResponse(`${timeGreeting} 👋 I’m Echion — your EchoRoom guide.
+
+EchoRoom runs on a structured learning cycle:
+
+Idea → Experiment → Outcome → Reflection
+
+You can ask me:
+• What to do after creating an Idea?
+• How experiment lifecycle works
+• Why completed experiments are locked
+• What comes next in the flow
+
+How can I help you today?`);
+
+  setInput("");
+  return;
+}
+
+const words = text.split(/\s+/);
 
     let bestMatch = null;
     let highestScore = 0;
@@ -29,12 +65,27 @@ export default function Echion() {
       let score = 0;
 
       for (const keyword of intent.keywords) {
-        const keywordWords = keyword.split(/\s+/);
+  const normalizedKeyword = keyword.toLowerCase();
 
-        for (const kw of keywordWords) {
-          if (words.includes(kw)) score++;
-        }
-      }
+  // Strong match: full phrase match
+  if (text.includes(normalizedKeyword)) {
+    score += 5; // High priority for exact phrase
+    continue;
+  }
+
+  // Partial match: require majority of words
+  const keywordWords = normalizedKeyword.split(/\s+/);
+  let matchCount = 0;
+
+  for (const kw of keywordWords) {
+    if (words.includes(kw)) matchCount++;
+  }
+
+  // Only count if more than half the words match
+  if (matchCount >= Math.ceil(keywordWords.length / 2)) {
+    score += matchCount;
+  }
+}
 
       if (score > highestScore) {
         highestScore = score;
@@ -58,6 +109,12 @@ export default function Echion() {
 
     setResponse(intent ? intent.response : fallbackResponse);
   };
+  useEffect(() => {
+  if (open) {
+    setResponse(null);
+    setInput("");
+  }
+}, [open]);
   useEffect(() => {
   if (open) {
     setShowBubble(false);

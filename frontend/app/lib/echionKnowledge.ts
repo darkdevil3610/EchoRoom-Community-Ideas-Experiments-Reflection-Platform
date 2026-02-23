@@ -9,26 +9,29 @@ export const echionIntents: EchionIntent[] = [
   // PLATFORM PURPOSE & PHILOSOPHY
   // ===============================
   {
-        keywords: [
-            "hi",
-            "hello",
-            "hey",
-            "good morning",
-            "good afternoon",
-            "good evening"
-        ],
-        response: `Hey there 👋
+  keywords: [
+    "hi",
+    "hello",
+    "hey",
+    "good morning",
+    "good afternoon",
+    "good evening"
+  ],
+  response: `Hey 👋 I’m Echion — your EchoRoom guide.
 
-        I'm Echion, your EchoRoom assistant.
+EchoRoom runs on a structured learning cycle:
 
-        You can ask me about:
-        • Ideas
-        • Experiments
-        • Outcomes
-        • Reflections
-        • How to get started
+Idea → Experiment → Outcome → Reflection
 
-        What would you like to know?`
+You can ask me things like:
+• What should I do after creating an Idea?
+• How does experiment lifecycle work?
+• Why is my completed experiment locked?
+• What comes after recording an Outcome?
+
+If you're new, I recommend starting with an Idea and turning it into an Experiment.
+
+How can I help you today?`
 },
 {
   keywords: ["thanks", "thank you", "ty"],
@@ -485,7 +488,276 @@ Your feedback helps improve the platform for everyone!`
     response: `I am Echion, the AI guide for EchoRoom. 
 
 I am here to help you navigate the platform, understand the learning loop, and answer any questions you have about using the site.`
-  }
+  },
+  // ===============================
+// EXPERIMENT LIFECYCLE AWARENESS
+// ===============================
+
+{
+  keywords: [
+    "why can't i edit completed experiment",
+    "why is experiment locked",
+    "cannot change completed experiment",
+    "completed experiment not editable",
+    "why can't i change status after completion"
+  ],
+  response: `Once an Experiment is marked as Completed, it becomes locked.
+
+This ensures:
+• The learning record remains accurate
+• The experiment history cannot be altered
+• Outcomes reflect final results
+
+You can still:
+• View the Outcome
+• Write a Reflection
+
+But the experiment state itself is final.`
+},
+
+{
+  keywords: [
+    "experiment status meaning",
+    "what does planned mean",
+    "what does in progress mean",
+    "what does completed mean in experiment"
+  ],
+  response: `Experiment Status Definitions:
+
+• Planned – The experiment is defined but not yet started.
+• In Progress – The experiment is actively being tested.
+• Completed – The experiment has finished and is permanently locked.
+
+Completion is a one-way transition to preserve structured learning.`
+},
+
+// ===============================
+// FULL APP FLOW EXPLANATION
+// ===============================
+
+{
+  keywords: [
+    "complete flow of app",
+    "full app flow",
+    "how does this app work completely",
+    "end to end flow",
+    "explain entire process",
+    "how everything connects"
+  ],
+  response: `EchoRoom follows a structured learning cycle:
+
+1️⃣ Idea  
+   - Create and publish a concept.
+
+2️⃣ Experiment  
+   - Test the idea in real conditions.
+   - Status progresses: Planned → In Progress → Completed.
+   - Once completed, the experiment becomes locked.
+
+3️⃣ Outcome  
+   - Record the result (Success, Failure, or Mixed).
+   - Each experiment supports one outcome to maintain clarity.
+
+4️⃣ Reflection  
+   - Document lessons learned.
+   - Share improvements and insights.
+
+The goal is not just discussion.
+It is documented, repeatable learning through action.`
+},
+
+// ===============================
+// GUIDED NEXT STEP INTELLIGENCE
+// ===============================
+
+{
+  keywords: [
+    "what should i do next",
+    "what next after experiment",
+    "next step after completion",
+    "what now after outcome"
+  ],
+  response: `Here’s how to continue:
+
+If your Experiment is Planned:
+→ Start it and move to In Progress.
+
+If it’s In Progress:
+→ Complete it when testing is done.
+
+If it’s Completed:
+→ Record the Outcome.
+→ Write a Reflection.
+→ Share insights.
+
+EchoRoom is about finishing the learning loop, not stopping halfway.`
+},
+
+// ===============================
+// OUTCOME STRUCTURE RULE
+// ===============================
+
+{
+  keywords: [
+    "why only one outcome",
+    "multiple outcomes for experiment",
+    "create second outcome",
+    "duplicate outcome not allowed"
+  ],
+  response: `Each Experiment supports one Outcome.
+
+This keeps:
+• Results clear
+• Records structured
+• Learning traceable
+
+If you want to test variations, create a new Experiment instead of adding multiple outcomes.`
+},
+
+// ===============================
+// STATUS TRANSITION CLARITY
+// ===============================
+
+{
+  keywords: [
+    "can i change completed to in progress",
+    "can i reopen completed experiment",
+    "reverse completed status",
+    "undo completion"
+  ],
+  response: `Completed Experiments cannot be reopened.
+
+Completion is a final state to preserve learning integrity.
+
+If you need to test something new:
+Create a new Experiment instead.`
+},
+// ===============================
+// AFTER IDEA PROGRESSION
+// ===============================
+
+{
+  keywords: [
+    "what to do after creating idea",
+    "after creating idea",
+    "next step after idea",
+    "after publishing idea",
+    "what comes after idea"
+  ],
+  response: `After creating an Idea, the next step is to test it through an Experiment.
+
+Flow:
+
+1️⃣ Go to the Experiments page  
+2️⃣ Click "New Experiment"  
+3️⃣ Link it to your Idea  
+4️⃣ Define hypothesis and plan  
+5️⃣ Start testing  
+
+Ideas are starting points.  
+Experiments turn them into action.`
+},
+
+// ===============================
+// AFTER EXPERIMENT PROGRESSION
+// ===============================
+
+{
+  keywords: [
+    "what to do after creating experiment",
+    "after creating experiment",
+    "next step after experiment",
+    "what after experiment",
+    "after finishing experiment",
+    "after running experiment"
+  ],
+  response: `What to do after creating an Experiment depends on its status:
+
+If status is **Planned**:
+→ Move it to "In Progress" when testing begins.
+
+If status is **In Progress**:
+→ Continue testing.
+→ Mark as Completed when finished.
+
+If status is **Completed**:
+→ Go to the Outcomes page.
+→ Record the result (Success / Failure / Mixed).
+→ Then write a Reflection.
+
+Experiments must be completed before creating an Outcome.`
+},
+
+// ===============================
+// AFTER COMPLETING EXPERIMENT
+// ===============================
+
+{
+  keywords: [
+    "what to do after completing experiment",
+    "after completing experiment",
+    "experiment completed what next",
+    "completed experiment next step"
+  ],
+  response: `After completing an Experiment:
+
+1️⃣ Go to the Outcomes page  
+2️⃣ Create an Outcome linked to that Experiment  
+3️⃣ Record the result  
+4️⃣ Then write a Reflection  
+
+Completed experiments are locked to preserve learning integrity.
+
+Now the focus shifts from testing to documenting results.`
+},
+
+// ===============================
+// AFTER OUTCOME PROGRESSION
+// ===============================
+
+{
+  keywords: [
+    "what to do after outcome",
+    "after creating outcome",
+    "next after outcome",
+    "what after recording outcome"
+  ],
+  response: `After recording an Outcome:
+
+1️⃣ Go to the Reflections page  
+2️⃣ Create a Reflection linked to the Outcome  
+3️⃣ Document:
+   • What worked
+   • What failed
+   • What you'd improve
+
+Outcomes capture results.
+Reflections capture learning.`
+},
+
+// ===============================
+// AFTER REFLECTION PROGRESSION
+// ===============================
+
+{
+  keywords: [
+    "what to do after reflection",
+    "after writing reflection",
+    "next step after reflection",
+    "what after reflection"
+  ],
+  response: `After writing a Reflection:
+
+You have completed one full learning cycle.
+
+Next, you can:
+• Improve the original Idea
+• Start a new Experiment
+• Share insights with the community
+• Explore other Ideas
+
+Reflection closes the loop — and opens the next one.`
+},
 
 ];
 
