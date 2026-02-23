@@ -70,7 +70,7 @@ export const postExperiment = (
   next: NextFunction
 ): void => {
   try {
-    const { title, description, status } = req.body;
+    const { title, description, status, linkedIdeaId } = req.body;
 
     if (!title || !description || !status) {
       res.status(400).json({
@@ -91,7 +91,8 @@ export const postExperiment = (
     const experiment = createExperiment(
       String(title),
       String(description),
-      status
+      status,
+      linkedIdeaId ? Number(linkedIdeaId) : undefined
     );
 
     res.status(201).json({
@@ -163,6 +164,7 @@ export const removeExperiment = (
     }
 
     const deleted = deleteExperiment(id);
+
     if (!deleted) {
       res.status(404).json({
         success: false,
@@ -175,7 +177,11 @@ export const removeExperiment = (
       success: true,
       message: "Experiment deleted",
     });
-  } catch (error) {
-    next(error);
+
+  } catch (err: any) {
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
   }
 };

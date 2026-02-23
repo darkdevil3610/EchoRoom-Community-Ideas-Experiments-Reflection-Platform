@@ -7,19 +7,22 @@ export interface Idea {
   title: string;
   description: string;
   status: IdeaStatus;
+  version: number;
   createdAt: string;
   updatedAt: string;
 }
 
 
 // allowed transitions
-const allowedTransitions: Record<IdeaStatus, IdeaStatus[]> = {
+import { StateMachine } from "../lib/stateMachine";
+
+const ideaStateMachine = new StateMachine<IdeaStatus>({
   draft: ["proposed"],
   proposed: ["experiment"],
   experiment: ["outcome"],
   outcome: ["reflection"],
   reflection: [],
-};
+});
 
 // Get all ideas
 export const getAllIdeas = (): Idea[] => {
@@ -29,6 +32,15 @@ export const getAllIdeas = (): Idea[] => {
 // Get only published ideas (non-draft)
 export const getPublishedIdeas = (): Idea[] => {
   return ideas.filter(i => i.status !== "draft");
+};
+
+//valualable api feature
+
+export const getAvailableTransitions = (id: number): IdeaStatus[] | null => {
+  const idea = ideas.find(i => i.id === id);
+  if (!idea) return null;
+
+  return ideaStateMachine.getAllowedTransitions(idea.status);
 };
 
 // Get only draft ideas
@@ -45,6 +57,7 @@ export const createIdea = (title: string, description: string): Idea => {
     title,
     description,
     status: "proposed",
+    version: 1,
     createdAt: now,
     updatedAt: now,
   };
@@ -62,6 +75,7 @@ export const createDraft = (title: string, description: string): Idea => {
     title,
     description,
     status: "draft",
+    version: 1, 
     createdAt: now,
     updatedAt: now,
   };
@@ -71,25 +85,32 @@ export const createDraft = (title: string, description: string): Idea => {
 };
 
 // Update a draft (title/description)
-export const updateDraft = (id: number, title: string, description: string): Idea | null => {
+export const updateDraft = (
+  id: number,
+  title: string,
+  description: string,
+  version: number
+): Idea | null => {
   const idea = ideas.find(i => i.id === id);
 
   if (!idea) return null;
 
-  if (idea.status !== "draft") {
-    throw new Error("Only draft ideas can be updated");
-  }
+if (idea.version !== version) {
+  throw new ConflictError("Idea has been modified by another user");
+}
 
-  idea.title = title;
-  idea.description = description;
-  idea.updatedAt = new Date().toISOString();
-
+idea.title = title;
+idea.description = description;
+idea.version += 1; // increment version
+idea.updatedAt = new Date().toISOString();
   return idea;
 };
 
 // Publish a draft (change from draft to proposed)
 export const publishDraft = (id: number): Idea | null => {
-  return updateIdeaStatus(id, "proposed");
+ export const publishDraft = (id: number, version: number): Idea | null => {
+  return updateIdeaStatus(id, "proposed", version);
+};
 };
 
 
@@ -99,11 +120,8 @@ export const updateIdeaStatus = (id: number, status: IdeaStatus): Idea | null =>
 
   if (!idea) return null;
 
-  const allowed = allowedTransitions[idea.status];
-
-  if (!allowed.includes(status)) {
-    throw new Error(`Invalid transition from '${idea.status}' to '${status}'`);
-  }
+ idea.status = ideaStateMachine.transition(idea.status, status);
+idea.updatedAt = new Date().toISOString();
 
   idea.status = status;
   idea.updatedAt = new Date().toISOString();

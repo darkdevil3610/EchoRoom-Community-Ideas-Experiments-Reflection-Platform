@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarIcon, ArrowRight } from "lucide-react";
+import { CalendarIcon, ArrowRight, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import ReactMarkdown from "react-markdown";
 import { apiFetch } from "../lib/api";
@@ -17,7 +17,7 @@ import {
 import { MagicCard } from "@/components/ui/magic-card";
 import { useEffect } from "react";
 import { useExperiments } from "../context/ExperimentsContext";
-
+import { RetroGrid } from "@/components/ui/retro-grid";
 
 export function ExperimentForm() {
   const router = useRouter();
@@ -46,6 +46,7 @@ export function ExperimentForm() {
     endDate: "",
     linkedIdeaId: "",
   });
+  const [dateError, setDateError] = useState<string>("");
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -67,10 +68,13 @@ export function ExperimentForm() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: formData.title,
-        description: formData.hypothesis,
-        status: "in-progress",
-      }),
+      title: formData.title,
+      description: formData.hypothesis,
+      status: "planned",
+      progress: 0,
+      linkedIdeaId: formData.linkedIdeaId || null,
+    }),
+    
     });
 
     router.push("/experiments");
@@ -82,6 +86,10 @@ export function ExperimentForm() {
 };
 
   return (
+    <>
+    <div className="fixed inset-0 z-0 pointer-events-none">
+      <RetroGrid />
+    </div>
     <Container className="max-w-3xl py-12 space-y-6">
       
       {/* Back Button — Top Left Outside Card */}
@@ -168,6 +176,14 @@ export function ExperimentForm() {
 
           {/* Dates */}
           <div className="grid md:grid-cols-2 gap-6">
+            {dateError && (
+              <div className="md:col-span-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex items-start gap-3 px-4 py-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50">
+                  <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm font-medium text-red-700 dark:text-red-300">{dateError}</p>
+                </div>
+              </div>
+            )}
             
             {/* Start Date */}
             <div>
@@ -201,9 +217,18 @@ export function ExperimentForm() {
                     }
                     onSelect={(date) => {
                       if (!date) return;
+                      let newStart = format(date, "yyyy-MM-dd");
+                      let newEnd = formData.endDate;
+                      setDateError("");
+                      // If endDate exists and is before new startDate, clear endDate
+                      if (newEnd && new Date(newEnd) < new Date(newStart)) {
+                        newEnd = "";
+                        setDateError("End date cannot be before start date. Please select a new end date.");
+                      }
                       setFormData((prev) => ({
                         ...prev,
-                        startDate: format(date, "yyyy-MM-dd"),
+                        startDate: newStart,
+                        endDate: newEnd,
                       }));
                     }}
                     initialFocus
@@ -249,9 +274,16 @@ export function ExperimentForm() {
                     }
                     onSelect={(date) => {
                       if (!date) return;
+                      let newEnd = format(date, "yyyy-MM-dd");
+                      setDateError("");
+                      // If startDate exists and new endDate is before it, show error and do not set
+                      if (formData.startDate && new Date(newEnd) < new Date(formData.startDate)) {
+                        setDateError("End date cannot be before start date.");
+                        return;
+                      }
                       setFormData((prev) => ({
                         ...prev,
-                        endDate: format(date, "yyyy-MM-dd"),
+                        endDate: newEnd,
                       }));
                     }}
                     initialFocus
@@ -259,9 +291,7 @@ export function ExperimentForm() {
                 </PopoverContent>
               </Popover>
             </div>
-
           </div>
-
           {/* Linked Idea */}
           <div>
             <label className="block text-sm font-medium mb-2">
@@ -298,5 +328,6 @@ export function ExperimentForm() {
         </form>
       </MagicCard>
     </Container>
+    </>
   );
 }

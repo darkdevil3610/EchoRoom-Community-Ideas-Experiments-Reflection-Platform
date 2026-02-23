@@ -69,7 +69,7 @@ export const postDraft = (req: Request, res: Response): void => {
 
 export const putDraft = (req: Request, res: Response): void => {
   const id = Number(req.params.id);
-  const { title, description } = req.body;
+  const { title, description, version} = req.body;
 
   if (Number.isNaN(id)) {
     res.status(400).json({
@@ -88,7 +88,7 @@ export const putDraft = (req: Request, res: Response): void => {
   }
 
   try {
-    const draft = updateDraft(id, title, description);
+    const draft = updateDraft(id, title, description, version);
 
     if (!draft) {
       res.status(404).json({

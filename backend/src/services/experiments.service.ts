@@ -1,5 +1,5 @@
 // backend/src/services/experiments.service.ts
-
+import { hasOutcomeForExperiment } from "./outcomes.service";
 export type ExperimentStatus = "planned" | "in-progress" | "completed";
 export const EXPERIMENT_PROGRESS_BY_STATUS: Record<ExperimentStatus, number> = {
   planned: 0,
@@ -12,6 +12,7 @@ export interface Experiment {
   title: string;
   description: string;
   status: ExperimentStatus;
+  linkedIdeaId?: number | null; 
   outcomeResult?: "Success" | "Failed" | null;
   createdAt: Date;
 }
@@ -52,7 +53,8 @@ export const getExperimentById = (id: number): Experiment | null => {
 export const createExperiment = (
   title: string,
   description: string,
-  status: ExperimentStatus
+  status: ExperimentStatus,
+  linkedIdeaId?: number
 ): Experiment => {
 
   const newExperiment: Experiment = {
@@ -60,6 +62,7 @@ export const createExperiment = (
     title,
     description,
     status,
+    linkedIdeaId: linkedIdeaId ?? null,
     createdAt: new Date(),
   };
 
@@ -85,8 +88,13 @@ export const updateExperiment = (
   if (updates.description !== undefined)
     experiment.description = updates.description;
 
-  if (updates.status !== undefined)
-    experiment.status = updates.status;
+  if (updates.status !== undefined) {
+  // If already completed block any status change
+  if (experiment.status === "completed") {
+    throw new Error("Completed experiments cannot be modified");
+  }
+  experiment.status = updates.status;
+}
 
   if (updates.outcomeResult !== undefined)
   experiment.outcomeResult = updates.outcomeResult;
@@ -95,14 +103,16 @@ export const updateExperiment = (
 };
 
 
-// Delete experiment
 export const deleteExperiment = (id: number): boolean => {
 
   const index = experiments.findIndex(e => e.id === id);
-
   if (index === -1) return false;
 
-  experiments.splice(index, 1);
+  // 🔒 Prevent deletion if outcome exists
+  if (hasOutcomeForExperiment(id)) {
+    throw new Error("Cannot delete experiment with a recorded outcome.");
+  }
 
+  experiments.splice(index, 1);
   return true;
 };
