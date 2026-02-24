@@ -11,21 +11,30 @@ import Button from "@/app/components/ui/Button";
 import RefreshIcon from "@/components/ui/refresh-icon";
 import LibraryIcon from "@/components/ui/library-icon";
 import { MagicCard } from "@/components/ui/magic-card";
-import { MessageSquare } from "lucide-react";
-
-interface Reflection {
-  id: number;
-  title: string;
-  outcome: string;
-  learning: string;
-  author: string;
-  date: string;
-}
+import { MessageSquare, TrendingUp } from "lucide-react";
 
 interface ReflectionApiResponse {
   id: number;
   outcomeId: number;
-  content: string;
+  context: {
+    emotionBefore: number;
+    confidenceBefore: number;
+  };
+  breakdown: {
+    whatHappened: string;
+    whatWorked: string;
+    whatDidntWork: string;
+  };
+  growth: {
+    lessonLearned: string;
+    nextAction: string;
+  };
+  result: {
+    emotionAfter: number;
+    confidenceAfter: number;
+  };
+  evidenceLink?: string;
+  visibility: "private" | "public";
   createdAt: string;
 }
 
@@ -34,6 +43,17 @@ interface OutcomeApiResponse {
   experimentId: number;
   experimentTitle: string;
   result: string;
+}
+
+interface ReflectionViewModel {
+  id: number;
+  title: string;
+  outcome: string;
+  lesson: string;
+  confidenceDelta: number;
+  emotionBefore: number;
+  emotionAfter: number;
+  date: string;
 }
 
 const outcomeColors: Record<string, string> = {
@@ -45,12 +65,10 @@ const outcomeColors: Record<string, string> = {
     "text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30",
 };
 
-const formatReflectionDate = (createdAt?: string): string => {
+const formatDate = (createdAt?: string): string => {
   if (!createdAt) return "Unknown date";
-
   const parsed = new Date(createdAt);
   if (Number.isNaN(parsed.getTime())) return "Unknown date";
-
   return parsed.toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
@@ -58,31 +76,34 @@ const formatReflectionDate = (createdAt?: string): string => {
   });
 };
 
-const mapReflectionToViewModel = (
+const mapReflection = (
   reflection: ReflectionApiResponse,
   outcomeMap: Map<number, OutcomeApiResponse>
-): Reflection => {
+): ReflectionViewModel => {
   const outcome = outcomeMap.get(reflection.outcomeId);
 
   return {
     id: reflection.id,
     title: outcome?.experimentTitle || "Unknown Experiment",
     outcome: outcome?.result || "Unknown",
-    learning: reflection.content || "No reflection content",
-    author: "Community member",
-    date: formatReflectionDate(reflection.createdAt),
+    lesson: reflection.growth.lessonLearned,
+    confidenceDelta:
+      reflection.result.confidenceAfter -
+      reflection.context.confidenceBefore,
+    emotionBefore: reflection.context.emotionBefore,
+    emotionAfter: reflection.result.emotionAfter,
+    date: formatDate(reflection.createdAt),
   };
 };
 
 export default function ReflectionPage() {
-  const [reflections, setReflections] = useState<Reflection[]>([]);
+  const [reflections, setReflections] = useState<ReflectionViewModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const router = useRouter();
 
   useEffect(() => {
-    const fetchReflections = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -92,12 +113,12 @@ export default function ReflectionPage() {
           apiFetch<OutcomeApiResponse[]>("/outcomes"),
         ]);
 
-        const outcomeMap = new Map<number, OutcomeApiResponse>(
+        const outcomeMap = new Map(
           outcomesData.map((o) => [o.id, o])
         );
 
         const mapped = reflectionsData.map((r) =>
-          mapReflectionToViewModel(r, outcomeMap)
+          mapReflection(r, outcomeMap)
         );
 
         setReflections(mapped);
@@ -108,7 +129,7 @@ export default function ReflectionPage() {
       }
     };
 
-    fetchReflections();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -151,7 +172,7 @@ export default function ReflectionPage() {
           </div>
 
           <p className="text-lg max-w-2xl text-black dark:text-white">
-            Reflection is where learning becomes meaningful.
+            Reflection is where learning becomes measurable growth.
           </p>
         </div>
 
@@ -164,15 +185,12 @@ export default function ReflectionPage() {
             >
               <div className="bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-xl border border-white/10 px-10 py-12 text-center">
                 <LibraryIcon className="w-10 h-10 mx-auto mb-5 text-blue-400 opacity-80" />
-
                 <h3 className="text-xl font-semibold text-black dark:text-white mb-2">
                   No reflections yet
                 </h3>
-
                 <p className="text-slate-500 text-sm leading-relaxed mb-7">
-                  Start recording learnings from your outcomes.
+                  Start recording structured learning from your outcomes.
                 </p>
-
                 <Button onClick={() => router.push("/reflection/new")}>
                   + Add First Reflection
                 </Button>
@@ -183,46 +201,60 @@ export default function ReflectionPage() {
           <div className="space-y-6">
             {reflections.map((ref) => (
               <div
-  key={ref.id}
-  className="cursor-pointer hover:scale-[1.02] transition"
->
-  <MagicCard
-    className="p-[1px] rounded-xl"
-    gradientColor="rgba(59,130,246,0.6)"
-  >
-    <div className="p-6 bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-xl border border-white/10">
+                key={ref.id}
+                onClick={() => router.push(`/reflection/${ref.id}`)}
+                className="cursor-pointer hover:scale-[1.02] transition"
+              >
+                <MagicCard
+                  className="p-[1px] rounded-xl"
+                  gradientColor="rgba(59,130,246,0.6)"
+                >
+                  <div className="p-6 bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-xl border border-white/10">
 
-      <div className="flex items-start justify-between mb-3">
-        <h3 className="text-xl font-semibold text-black dark:text-white">
-          {ref.title}
-        </h3>
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="text-xl font-semibold text-black dark:text-white">
+                        {ref.title}
+                      </h3>
 
-        <span
-          className={`text-xs font-medium px-3 py-1 rounded-full ${
-            outcomeColors[ref.outcome] || ""
-          }`}
-        >
-          {ref.outcome}
-        </span>
-      </div>
+                      <span
+                        className={`text-xs font-medium px-3 py-1 rounded-full ${
+                          outcomeColors[ref.outcome] || ""
+                        }`}
+                      >
+                        {ref.outcome}
+                      </span>
+                    </div>
 
-      <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg p-4 mb-4">
-        <div className="flex items-start gap-2">
-          <MessageSquare className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
-          <p className="text-sm italic">
-            "{ref.learning}"
-          </p>
-        </div>
-      </div>
+                    {/* Lesson Preview */}
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg p-4 mb-4">
+                      <div className="flex items-start gap-2">
+                        <MessageSquare className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+                        <p className="text-sm italic line-clamp-2">
+                          "{ref.lesson}"
+                        </p>
+                      </div>
+                    </div>
 
-      <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-        <span>By {ref.author}</span>
-        <span>{ref.date}</span>
-      </div>
+                    {/* Growth Indicators */}
+                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
 
-    </div>
-  </MagicCard>
-</div>
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-blue-500" />
+                        <span>
+                          Confidence {ref.confidenceDelta >= 0 ? "+" : ""}
+                          {ref.confidenceDelta}
+                        </span>
+                        <span>
+                          Emotion {ref.emotionBefore} → {ref.emotionAfter}
+                        </span>
+                      </div>
+
+                      <span>{ref.date}</span>
+                    </div>
+
+                  </div>
+                </MagicCard>
+              </div>
             ))}
           </div>
         )}
