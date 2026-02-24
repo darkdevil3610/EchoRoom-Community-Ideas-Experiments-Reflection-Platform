@@ -9,6 +9,7 @@ import outcomesRoutes from "./routes/outcomes.routes";
 import reflectionsRoutes from "./routes/reflections.routes";
 import authRoutes from "./routes/auth.routes";
 import commentsRoutes from "./routes/comments.routes";
+import likesRoutes from "./routes/likes.routes";
 
 // import prisma from "./lib/prisma";
 console.log("INDEX TS SERVER STARTED");
@@ -28,6 +29,7 @@ app.use("/experiments", experimentsRoutes);
 app.use("/outcomes", outcomesRoutes);
 app.use("/reflections", reflectionsRoutes);
 app.use("/ideas/:ideaId/comments", commentsRoutes);
+app.use("/likes", likesRoutes);
 
 app.use((err: any, _req: Request, res: Response, _next: any) => {
   console.error("Unhandled error:", err);

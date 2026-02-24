@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "../lib/api";
+import { normalizeIdeaStatus } from "../../lib/validation";
 import BackButton from "../components/BackButton";
 import BulbSvg from "@/components/ui/bulb-svg";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ import { MagicCard } from "@/components/ui/magic-card";
 import {
   Check,
   Facebook,
+  Filter,
   Link2,
   Linkedin,
   MessageCircle,
@@ -20,17 +22,13 @@ import {
   Clock,
   CheckCircle2,
   XCircle,
+  Heart,
 } from "lucide-react";
 import { PageLayout } from "../community/PageLayout";
 import LoadingState from "../components/LoadingState";
 import ErrorState from "../components/ErrorState";
 import ActionSearchBar from "@/components/ui/action-search-bar";
-import {
-  getIdeaStatusLabel,
-  IDEA_STATUS_FILTERS,
-  IdeaStatusFilter,
-  normalizeIdeaStatus,
-} from "@/lib/validation";
+import HeartIcon from "@/components/ui/heart-icon";
 
 interface Idea {
   id: number;
@@ -40,12 +38,20 @@ interface Idea {
   complexity: "LOW" | "MEDIUM" | "HIGH";
 }
 
+interface LikeData {
+  [ideaId: number]: {
+    count: number;
+    liked: boolean;
+  };
+}
 
-const STATUS_OPTIONS = IDEA_STATUS_FILTERS.map((status) => ({
-  value: status,
-  label: status === "All" ? "All Status" : status,
-}));
-
+const STATUS_OPTIONS = [
+  { value: "All", label: "All Status" },
+  { value: "New", label: "New" },
+  { value: "In Progress", label: "In Progress" },
+  { value: "Implemented", label: "Implemented" },
+  { value: "Discarded", label: "Discarded" },
+];
 const getStatusIcon = (status: string, isActive: boolean) => {
   const colorClass = isActive ? "text-blue-500" : "text-gray-400";
   const size = 16;
@@ -88,8 +94,76 @@ export default function IdeasPage() {
   const [deleteIdea, setDeleteIdea] = useState<Idea | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [likes, setLikes] = useState<LikeData>({});
+  const [likingId, setLikingId] = useState<number | null>(null);
+
+  // Load likes from localStorage on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("echoroom_likes");
+    if (stored) {
+      try {
+        setLikes(JSON.parse(stored));
+      } catch (e) {
+        console.error("Failed to parse likes", e);
+      }
+    }
+  }, []);
+
+  // Save likes to localStorage when they change
+  const saveLikes = useCallback((newLikes: LikeData) => {
+    setLikes(newLikes);
+    localStorage.setItem("echoroom_likes", JSON.stringify(newLikes));
+  }, []);
+
+  // Toggle like for an idea
+  const handleLike = (ideaId: number) => {
+    setLikingId(ideaId);
+    const currentLike = likes[ideaId] || { count: 0, liked: false };
+    const newLikeState = !currentLike.liked;
+    const newCount = newLikeState ? currentLike.count + 1 : Math.max(0, currentLike.count - 1);
+    
+    const newLikes = {
+      ...likes,
+      [ideaId]: {
+        count: newCount,
+        liked: newLikeState,
+      },
+    };
+    saveLikes(newLikes);
+    setLikingId(null);
+  };
+
+  const handleCopyLink = (id: number) => {
+    const url = `${window.location.origin}/ideas/${id}`;
+    navigator.clipboard.writeText(url);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleShareTwitter = (idea: Idea) => {
+    const text = encodeURIComponent(`Check out this idea on EchoRoom: ${idea.title}`);
+    const url = encodeURIComponent(`${window.location.origin}/ideas/${idea.id}`);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, "_blank");
+  };
+
+  const handleShareLinkedIn = (idea: Idea) => {
+    const url = encodeURIComponent(`${window.location.origin}/ideas/${idea.id}`);
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, "_blank");
+  };
+
+  const handleShareWhatsApp = (idea: Idea) => {
+    const text = encodeURIComponent(`Check out this idea on EchoRoom: ${idea.title} - ${window.location.origin}/ideas/${idea.id}`);
+    window.open(`https://wa.me/?text=${text}`, "_blank");
+  };
+
+  const handleShareFacebook = (idea: Idea) => {
+    const url = encodeURIComponent(`${window.location.origin}/ideas/${idea.id}`);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+  };
+
+  // Search and Filter State
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<IdeaStatusFilter>("All");
+  const [statusFilter, setStatusFilter] = useState<string>("All");
   const router = useRouter();
 
   useEffect(() => {
@@ -125,13 +199,6 @@ export default function IdeasPage() {
 
     return matchesSearch && matchesStatus;
   });
-
-  const handleCopyLink = (id: number) => {
-    const url = `${window.location.origin}/ideas/${id}`;
-    navigator.clipboard.writeText(url);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
 
   const handleDelete = async () => {
     if (!deleteIdea || deleting) return;
@@ -298,8 +365,26 @@ export default function IdeasPage() {
                     {idea.description}
                   </p>
 
-                  <div className="text-sm text-gray-400 mt-auto pt-4 border-t border-white/10">
-                    Status: {getIdeaStatusLabel(idea.status)}
+                  <div className="text-sm text-gray-400 mt-auto pt-4 border-t border-white/10 flex items-center justify-between">
+                    <span>Status: {idea.status}</span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleLike(idea.id); }}
+                      disabled={likingId === idea.id}
+                      className={`flex items-center gap-1.5 px-2 py-1 rounded-md transition-all ${
+                        (likes[idea.id]?.liked ?? false)
+                          ? "text-red-500 bg-red-500/10"
+                          : "text-gray-400 hover:text-red-500 hover:bg-red-500/10"
+                      }`}
+                      title={(likes[idea.id]?.liked ?? false) ? "Unlike" : "Like"}
+                    >
+                      <HeartIcon 
+                        filled={(likes[idea.id]?.liked ?? false)} 
+                        className="w-4 h-4" 
+                      />
+                      <span className="text-xs font-medium">
+                        {(likes[idea.id]?.count ?? 0)}
+                      </span>
+                    </button>
                   </div>
                 </div>
               </MagicCard>

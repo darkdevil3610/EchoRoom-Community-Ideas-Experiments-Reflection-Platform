@@ -1,13 +1,15 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { PageLayout } from "../../community/PageLayout";
 import LoadingState from "../../components/LoadingState";
 import ErrorState from "../../components/ErrorState";
 import { apiFetch } from "../../lib/api";
 import IdeaTimeline from "../../components/IdeaTimeline";
 import ShareButton from "../../components/ShareButton";
+import HeartIcon from "@/components/ui/heart-icon";
+import { Share2, Link2, Twitter, Linkedin, MessageCircle, Facebook, Check } from "lucide-react";
 
 
 interface Idea {
@@ -15,6 +17,13 @@ interface Idea {
   title: string;
   description: string;
   status: string;
+}
+
+interface LikeData {
+  [ideaId: number]: {
+    count: number;
+    liked: boolean;
+  };
 }
 
 export default function IdeaDetailPage() {
@@ -25,6 +34,46 @@ export default function IdeaDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [likes, setLikes] = useState<LikeData>({});
+  const [liking, setLiking] = useState(false);
+
+  // Load likes from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem("echoroom_likes");
+    if (stored) {
+      try {
+        setLikes(JSON.parse(stored));
+      } catch (e) {
+        console.error("Failed to parse likes", e);
+      }
+    }
+  }, []);
+
+  // Save likes to localStorage
+  const saveLikes = useCallback((newLikes: LikeData) => {
+    setLikes(newLikes);
+    localStorage.setItem("echoroom_likes", JSON.stringify(newLikes));
+  }, []);
+
+  // Handle like toggle
+  const handleLike = () => {
+    if (!idea || liking) return;
+    setLiking(true);
+    const ideaId = idea.id;
+    const currentLike = likes[ideaId] || { count: 0, liked: false };
+    const newLikeState = !currentLike.liked;
+    const newCount = newLikeState ? currentLike.count + 1 : Math.max(0, currentLike.count - 1);
+    
+    const newLikes = {
+      ...likes,
+      [ideaId]: {
+        count: newCount,
+        liked: newLikeState,
+      },
+    };
+    saveLikes(newLikes);
+    setLiking(false);
+  };
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -105,8 +154,26 @@ export default function IdeaDetailPage() {
           {idea.description}
         </p>
 
-        <div className="text-sm text-gray-400 mb-6">
-          Status: {idea.status}
+        <div className="text-sm text-gray-400 mb-6 flex items-center justify-between">
+          <span>Status: {idea.status}</span>
+          <button
+            onClick={handleLike}
+            disabled={liking}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all ${
+              (likes[idea.id]?.liked ?? false)
+                ? "text-red-500 bg-red-500/10 border border-red-500/20"
+                : "text-gray-400 hover:text-red-500 hover:bg-red-500/10 border border-transparent"
+            }`}
+            title={(likes[idea.id]?.liked ?? false) ? "Unlike this idea" : "Like this idea"}
+          >
+            <HeartIcon 
+              filled={(likes[idea.id]?.liked ?? false)} 
+              className="w-5 h-5" 
+            />
+            <span className="text-sm font-medium">
+              {(likes[idea.id]?.count ?? 0)}
+            </span>
+          </button>
         </div>
 
         {/* Share Section */}
