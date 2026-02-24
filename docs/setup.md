@@ -27,3 +27,18 @@ http://localhost:5000
 - No database is required
 
 - Features are intentionally minimal
+---
+
+## Backend Setup (Local Development)
+
+This section explains how to run the backend locally for development.
+
+### Prerequisites
+- Node.js (v18 or later recommended)
+- npm
+- MongoDB Atlas account
+
+### Install Dependencies
+```bash
+cd backend
+npm install
