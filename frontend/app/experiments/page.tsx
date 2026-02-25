@@ -11,9 +11,10 @@ import Button from "@/app/components/ui/Button";
 import ChartHistogramIcon from "@/components/ui/chart-histogram-icon";
 import { MagicCard } from "@/components/ui/magic-card";
 import TrashIcon from "@/components/ui/trash-icon";
-import { Link2, Check, Clock, Lightbulb, Target, ShieldAlert } from "lucide-react";
+import { Link2, Check, Clock, Lightbulb, Target, ShieldAlert, Copy } from "lucide-react";
 import { differenceInDays, parseISO, isAfter } from "date-fns";
 import BulbSvg from "@/components/ui/bulb-svg";
+import CopyIcon from "@/components/ui/copy-icon";
 
 interface Experiment {
   id: number;
@@ -226,7 +227,7 @@ export default function ExperimentsPage() {
               gradientColor="rgba(59,130,246,0.6)"
             >
               <div className="bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-xl border border-white/10 px-10 py-16 text-center">
-                <div className="bg-blue-500/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className=" w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <ChartHistogramIcon className="w-8 h-8 text-blue-500" />
                 </div>
 
@@ -271,7 +272,7 @@ export default function ExperimentsPage() {
                         {copiedId === exp.id ? (
                           <Check className="w-4 h-4 text-green-500" />
                         ) : (
-                          <Link2 className="w-4 h-4" />
+                          <Copy className="w-4 h-4" />
                         )}
                       </button>
                       <button

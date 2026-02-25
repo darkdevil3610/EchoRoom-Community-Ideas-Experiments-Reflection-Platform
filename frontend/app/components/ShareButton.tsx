@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Share2, Copy, Check, Twitter, Linkedin, Link2 } from "lucide-react";
+import { Share2, Copy, Check, Twitter, Linkedin, Link2, SendIcon } from "lucide-react";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 
 interface ShareButtonProps {
@@ -76,7 +76,7 @@ export default function ShareButton({ title, description, type }: ShareButtonPro
         onClick={handleNativeShare}
         
       >
-        <Share2 className="w-4 h-4" />
+        <SendIcon className="w-4 h-4" />
         Share
       </RainbowButton>
 
