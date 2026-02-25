@@ -41,11 +41,6 @@ export const getDrafts = (_req: Request, res: Response): void => {
 export const getIdeaByIdHandler = (req: Request, res: Response): void => {
   const id = Number(req.params.id);
 
-  if (Number.isNaN(id)) {
-    res.status(400).json({ success: false, message: "Invalid idea ID" });
-    return;
-  }
-
   const idea = getIdeaById(id);
 
   if (!idea) {
@@ -59,22 +54,6 @@ export const getIdeaByIdHandler = (req: Request, res: Response): void => {
 export const postDraft = (req: Request, res: Response): void => {
   const { title, description, complexity } = req.body;
 
-  if (!isValidString(title) || !isValidString(description)) {
-    res.status(400).json({
-      success: false,
-      message: "Title and description are required",
-    });
-    return;
-  }
-
-  if (complexity && !isValidComplexity(complexity)) {
-    res.status(400).json({
-      success: false,
-      message: "Invalid complexity value",
-    });
-    return;
-  }
-
   const draft = createDraft(title, description, complexity);
   res.status(201).json({ success: true, idea: draft });
 };
@@ -82,27 +61,6 @@ export const postDraft = (req: Request, res: Response): void => {
 export const putDraft = (req: Request, res: Response): void => {
   const id = Number(req.params.id);
   const { title, description, version } = req.body;
-
-  if (Number.isNaN(id)) {
-    res.status(400).json({ success: false, message: "Invalid idea ID" });
-    return;
-  }
-
-  if (!isValidString(title) || !isValidString(description)) {
-    res.status(400).json({
-      success: false,
-      message: "Title and description are required",
-    });
-    return;
-  }
-
-  if (typeof version !== "number") {
-    res.status(400).json({
-      success: false,
-      message: "Version is required",
-    });
-    return;
-  }
 
   try {
     const draft = updateDraft(id, title, description, version);
@@ -128,19 +86,6 @@ export const publishDraftHandler = (
   const id = Number(req.params.id);
   const { version } = req.body;
 
-  if (Number.isNaN(id)) {
-    res.status(400).json({ success: false, message: "Invalid idea ID" });
-    return;
-  }
-
-  if (typeof version !== "number") {
-    res.status(400).json({
-      success: false,
-      message: "Version is required",
-    });
-    return;
-  }
-
   try {
     const idea = publishDraft(id, version);
 
@@ -160,22 +105,6 @@ export const publishDraftHandler = (
 
 export const postIdea = (req: Request, res: Response): void => {
   const { title, description, complexity } = req.body;
-
-  if (!isValidString(title) || !isValidString(description)) {
-    res.status(400).json({
-      success: false,
-      message: "Title and description are required",
-    });
-    return;
-  }
-
-  if (complexity && !isValidComplexity(complexity)) {
-    res.status(400).json({
-      success: false,
-      message: "Invalid complexity value",
-    });
-    return;
-  }
 
   const idea = createIdea(title, description, complexity);
   res.status(201).json({ success: true, idea });
@@ -232,11 +161,6 @@ export const deleteIdeaById = (
   res: Response
 ): void => {
   const id = Number(req.params.id);
-
-  if (Number.isNaN(id)) {
-    res.status(400).json({ success: false, message: "Invalid idea ID" });
-    return;
-  }
 
   const deleted = deleteIdea(id);
 

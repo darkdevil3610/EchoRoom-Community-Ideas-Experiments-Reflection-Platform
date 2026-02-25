@@ -5,7 +5,6 @@ import {
   getProgressForExperimentStatus,
   getAllExperiments,
   getExperimentById,
-  isExperimentStatus,
   updateExperiment,
   Experiment,
 } from "../services/experiments.service";
@@ -38,13 +37,6 @@ export const getExperiment = (
 ): void => {
   try {
     const id = Number(req.params.id);
-    if (Number.isNaN(id)) {
-      res.status(400).json({
-        success: false,
-        message: "Invalid experiment ID",
-      });
-      return;
-    }
 
     const experiment = getExperimentById(id);
     if (!experiment) {
@@ -71,22 +63,6 @@ export const postExperiment = (
 ): void => {
   try {
     const { title, description, hypothesis, successMetric, falsifiability, status, endDate, linkedIdeaId } = req.body;
-
-    if (!title || !description || !hypothesis || !successMetric || !falsifiability || !status || !endDate) {
-      res.status(400).json({
-        success: false,
-        message: "title, description, hypothesis, successMetric, falsifiability, status, and endDate are required",
-      });
-      return;
-    }
-
-    if (!isExperimentStatus(status)) {
-      res.status(400).json({
-        success: false,
-        message: "status must be one of: planned, in-progress, completed",
-      });
-      return;
-    }
 
     const experiment = createExperiment(
       String(title),
@@ -115,24 +91,6 @@ export const putExperiment = (
 ): void => {
   try {
     const id = Number(req.params.id);
-    if (Number.isNaN(id)) {
-      res.status(400).json({
-        success: false,
-        message: "Invalid experiment ID",
-      });
-      return;
-    }
-
-    if (
-      Object.prototype.hasOwnProperty.call(req.body, "status") &&
-      !isExperimentStatus(req.body.status)
-    ) {
-      res.status(400).json({
-        success: false,
-        message: "status must be one of: planned, in-progress, completed",
-      });
-      return;
-    }
 
     const updatedExperiment = updateExperiment(id, req.body);
     if (!updatedExperiment) {
@@ -159,13 +117,6 @@ export const removeExperiment = (
 ): void => {
   try {
     const id = Number(req.params.id);
-    if (Number.isNaN(id)) {
-      res.status(400).json({
-        success: false,
-        message: "Invalid experiment ID",
-      });
-      return;
-    }
 
     const deleted = deleteExperiment(id);
 
