@@ -357,9 +357,24 @@ export default function IdeasPage() {
                     </button>
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-semibold text-black dark:text-white pr-10 mb-2">
+                  <h3 className="text-lg sm:text-xl font-semibold text-black dark:text-white pr-10 mb-1">
                     {idea.title}
                   </h3>
+
+                  {/* Add the Complexity Badge here */}
+                  <div className="mb-3">
+                    <span 
+                      className={`inline-flex items-center text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-semibold border ${
+                        idea.complexity === 'HIGH' 
+                          ? 'bg-rose-500/10 text-rose-500 border-rose-500/20' 
+                          : idea.complexity === 'MEDIUM' 
+                          ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' 
+                          : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+                      }`}
+                    >
+                      {idea.complexity} COMPLEXITY
+                    </span>
+                  </div>
 
                   <p className="text-slate-600 dark:text-slate-100 text-sm mb-4 flex-grow">
                     {idea.description}

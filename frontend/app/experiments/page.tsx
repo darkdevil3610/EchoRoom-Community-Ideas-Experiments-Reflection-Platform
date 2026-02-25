@@ -226,7 +226,7 @@ export default function ExperimentsPage() {
               gradientColor="rgba(59,130,246,0.6)"
             >
               <div className="bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl rounded-xl border border-white/10 px-10 py-16 text-center">
-                <div className="bg-blue-500/10 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <div className=" w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
                   <ChartHistogramIcon className="w-8 h-8 text-blue-500" />
                 </div>
 
